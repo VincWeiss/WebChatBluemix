@@ -11,7 +11,7 @@ $(function() {
   // Initialize varibles
   var $window = $(window);
   var $usernameInput = $('.usernameInput'); // Input for username
-  var $passwordInput = $('.passwordInput'); // Input for username
+  //var $passwordInput = $('.passwordInput'); // Input for username
  // var $passwordInput = "abcdefg";
   var $messages = $('.messages'); // Messages area
   var $inputMessage = $('.inputMessage'); // Input message input box
@@ -68,8 +68,8 @@ $(function() {
   function depp() {
 	console.log('function setUsername ()');
     username = cleanInput($usernameInput.val().trim());
-    password = cleanInput($passwordInput.val().trim());
-    console.log('PW SHOULD BE:        ' + $passwordInput.val());
+    //password = cleanInput($passwordInput.val().trim());
+    //console.log('PW SHOULD BE:        ' + $passwordInput.val());
     console.log('PW is:        ' + password);
    // password = $passwordInput.val();
     console.log('function setUsername ()');
@@ -87,7 +87,7 @@ $(function() {
 	    	username = "";
 	    	password = "";
 	    	$usernameInput = "";
-	    	$passwordInput = "";
+	    	//$passwordInput = "";
 	    }
     });
   }
@@ -256,6 +256,7 @@ $(function() {
     }
     // When the client hits ENTER on their keyboard
     if (event.which === 13) {
+    	console.log("EVENT ENTER");
       if (username) {
         sendMessage();
         socket.emit('stop typing');
