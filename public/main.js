@@ -59,9 +59,14 @@ $(function() {
 	  // Tell the server your username
 	  socket.emit('add user',  {name:username, pw:'abc'});
   }
-  // Sets the client's username
+  
   function setUsername() {
-	 console.log('function setUsername ()');
+	  console.log("Oxi sagt ich soll noch was reinschreiben");
+  }
+  
+  // Sets the client's username
+  function depp() {
+	console.log('function setUsername ()');
     username = cleanInput($usernameInput.val().trim());
     password = cleanInput($passwordInput.val().trim());
     console.log('PW SHOULD BE:        ' + $passwordInput.val());
