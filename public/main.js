@@ -50,8 +50,17 @@ $(function() {
 	    log(data);
 	  }
 
+  function login() {
+	  $loginPage.fadeOut();
+	  $chatPage.show();
+	  $loginPage.off('click');
+	  $currentInput = $inputMessage.focus();
+	  
+	  // Tell the server your username
+	  socket.emit('add user',  {name:username, pw:'abc'});
+  }
   // Sets the client's username
-  function setUsername () {
+  function setUsername() {
 	 console.log('function setUsername ()');
     username = cleanInput($usernameInput.val().trim());
     password = cleanInput($passwordInput.val().trim());
@@ -66,20 +75,19 @@ $(function() {
     	console.log("socket emit register new user");
 		  if (data){
 			  console.log("DATA TRUE");
-			  $loginPage.fadeOut();
-			  $chatPage.show();
-			  $loginPage.off('click');
-			  $currentInput = $inputMessage.focus();
-	
-			  // Tell the server your username
-			  socket.emit('add user',  {name:username, pw:'abc'});
+			  login();
+			  
 			  console.log("ADD USER");
 	    } else {
-	    	
+	    	username = "";
+	    	password = "";
+	    	$usernameInput = "";
+	    	$passwordInput = "";
 	    }
     });
   }
 
+  
   // Sends a chat message
   function sendMessage () {
     var message = $inputMessage.val();
