@@ -110,12 +110,12 @@ span.messageBody {
 }
 
 .login.page .title, .pw {
-  font-size: 150%;
 }
 
 .login.page .title, .pw {
-  color: #fff;
-  font-weight: 100;
+	font-size: 150%;
+	color: #fff;
+	font-weight: 100;
 }
 
 .login.page .passwordInput, .usernameInput {
