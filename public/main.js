@@ -248,7 +248,7 @@ $(function() {
 
   // Focus input when clicking anywhere on login page
   $loginPage.click(function () {
-    $currentInput.focus();
+    //$currentInput.focus();
   });
 
   // Focus input when clicking on the message input's border
