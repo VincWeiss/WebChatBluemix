@@ -57,17 +57,18 @@ $(function() {
   function setUsername () {
 	var password = $passwordInput.val();
     username = cleanInput($usernameInput.val().trim());
+    var callback = false;
     
     console.log('pw' + password);
+    socket.emit('register new user', { name:username, pw:password});
     // If the username is valid
-    if (username) {
+    if (callback) {
       $loginPage.fadeOut();
       $chatPage.show();
       $loginPage.off('click');
       $currentInput = $inputMessage.focus();
-
+      log('Welcome back' + username);
       // Tell the server your username
-      socket.emit('add user', { name:username, pw:password});
     }
   }
 

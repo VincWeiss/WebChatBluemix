@@ -134,18 +134,53 @@
 		var checkUsername=false;
 		var username = data.name;
 		db.get(username, function(err, dataGet) {
-			if (!err){
-				  callback(false);
+			if (err){
+				socket.nickname=data.name;
+			      users[socket.nickname]=socket;
+			      ++numUsers;
+			      addedUser = true;
+			      db.insert({ _id:data.name, password:data.pw}, function(err, body) {
+			    	  console.log('Shoulda worked');
+			    	  if (!err){
+			    		  console.log('Error');
+			    		  console.log(body);
+			    	  } 				
+			      });
+			      socket.emit('login', {
+			        numUsers: numUsers
+			      });
+			      // echo globally (all clients) that a person has connected
+			      socket.broadcast.emit('user joined', {
+			        username: socket.nickname,
+			        numUsers: numUsers
+			      });
+				  callback(true);
 			} else if(data.name in users){
 					callback(false);
-			} else{ 
+			} else if(data.pw === dataGet.password){
+				socket.nickname=data.name;
+			      users[socket.nickname]=socket;
+			      ++numUsers;
+			      addedUser = true;
+			      db.insert({ _id:data.name, password:data.pw}, function(err, body) {
+			    	  console.log('Shoulda worked');
+			    	  if (!err){
+			    		  console.log('Error');
+			    		  console.log(body);
+			    	  } 				
+			      });
+			      socket.emit('login', {
+			        numUsers: numUsers
+			      });
+			      // echo globally (all clients) that a person has connected
+			      socket.broadcast.emit('user joined', {
+			        username: socket.nickname,
+			        numUsers: numUsers
+			      });
 					callback(true);
-					//socket.nickname = data.name;
-					//users[socket.nickname] = socket;
-					//users.push(data.name);
-					//ende
+			}else {
+					callback(false);
 			}
-		//ende der methode
 			});			
     });	
 			/*		
