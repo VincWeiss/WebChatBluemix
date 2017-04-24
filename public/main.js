@@ -3,7 +3,7 @@ $(function() { // change done
   var TYPING_TIMER_LENGTH = 400; // ms
   var COLORS = [
 	  
-    '#e21400', '#91580f', '#f8a700', '#f78b00', //NEW COLORS!!!
+    '#e21400', '#91580f', '#f8a700', '#f78b00', // NEW COLORS!!!
     '#508900', '#366420', '#0da784', '#4ae8c4',
     '#3b88eb', '#3824aa', '#a700ff', '#d300e7', 
     '#ed72e8', '#ed72a4', '#780a36', '#846132', 
@@ -25,7 +25,8 @@ $(function() { // change done
   var typing = false;
   var lastTypingTime;
   
-  //This makes the focus on the username field. Without it we cant enter anything. See $window.keydown(function (event) for more info. Line 227
+  // This makes the focus on the username field. Without it we cant enter
+	// anything. See $window.keydown(function (event) for more info. Line 227
   var $currentInput = $usernameInput.focus();
 
   var socket = io();
@@ -53,25 +54,39 @@ $(function() { // change done
 	    log(data);
 	  }
 
-  // Sets the client's username
-  function setUsername () {
+// Sets the client's username
+function setUsername () {
 	var password = $passwordInput.val();
-    username = cleanInput($usernameInput.val().trim());
-    var callback = false;
-    
-    console.log('pw' + password);
-    socket.emit('register new user', { name:username, pw:password});
-    // If the username is valid
-    if (callback) {
-      console.log('Callback ' + callback);
-      $loginPage.fadeOut();
-      $chatPage.show();
-      $loginPage.off('click');
-      $currentInput = $inputMessage.focus();
-      log('Welcome back' + username);
-      // Tell the server your username
-    }
-  }
+	username = cleanInput($usernameInput.val().trim());
+	console.log('pw' + password);
+	socket.emit('register new user', { name:username, pw:password},function(callbackValue){
+		console.log('Callback ' + callbackValue);
+		switch(callbackValue){
+		case 1:
+			$loginPage.fadeOut();
+			$chatPage.show();
+			$loginPage.off('click');
+			$currentInput = $inputMessage.focus();
+			log('Welcome ' + username);
+			// Tell the server your username
+			break;
+		case 2:
+			$loginPage.fadeOut();
+			$chatPage.show();
+			$loginPage.off('click');
+			$currentInput = $inputMessage.focus();
+			log('Welcome back ' + username);
+			// User already registered
+			break;
+		case 3:
+			//window.alert("Username already taken! Or Wrong Password!");
+			if(!alert('Username already taken! Or Wrong Password!')){window.location.reload();}
+			//$usernameInput.reset();
+			//$passwordInput.reset();
+			break;
+		}
+	});
+}
 
   // Sends a chat message
   function sendMessage () {
@@ -108,7 +123,7 @@ $(function() { // change done
     }
     var $timestampDiv = $('<span class="timestamp" style = "font-size: 60%"/>')
       .text(formatDate(data.timestamp));
-    //Change color if requested by server
+    // Change color if requested by server
     if(data.message.includes('/color') || data.message.includes('/Color')){
     	var $usernameDiv = $('<span class="username"/>')
         .text(data.username)
@@ -179,7 +194,7 @@ $(function() { // change done
     return $('<div/>').text(input).text();
   }
   
-  //set and format the date
+  // set and format the date
   function formatDate(dateObj) {
     var d = new Date(dateObj);
     var hours = d.getHours();
@@ -231,7 +246,7 @@ $(function() { // change done
   $window.keydown(function (event) {
     // Auto-focus the current input when a key is typed
     if (!(event.ctrlKey || event.metaKey || event.altKey)) {
-      //$currentInput.focus();
+      // $currentInput.focus();
     }
     // When the client hits ENTER on their keyboard
     if (event.which === 13) {
@@ -252,13 +267,13 @@ $(function() { // change done
   // Click events
 
   // Focus input when clicking anywhere on login page
-  //$loginPage.click(function () {
-	//$currentInput.focus();
-  //});
+  // $loginPage.click(function () {
+	// $currentInput.focus();
+  // });
 
   // Focus input when clicking on the message input's border
   $inputMessage.click(function () {
-    //$inputMessage.focus();
+    // $inputMessage.focus();
   });
 
   // Socket events
@@ -267,22 +282,18 @@ $(function() { // change done
   socket.on('login', function (data) {
     connected = true;
     // Display the welcome message
-    var message = 'Hello '+ username +'!';
-    log(message, {
-      prepend: true
-    });
     log('Welcome to Chillouts');
     addParticipantsMessage(data);
   });
   
-  //Show a list of all users
+  // Show a list of all users
   socket.on('list', function (data) {
 	    var message = data;
 	    log('Connected Users are:');
 	    log(message);
 	  });
   
-  //Show the written Note by the user on his Log
+  // Show the written Note by the user on his Log
   socket.on('announce', function (data) {
 	  log('Note: ' + data);
 	  });
@@ -300,6 +311,7 @@ $(function() { // change done
 
   // Whenever the server emits 'user joined', log it in the chat body
   socket.on('user joined', function (data) {
+	  console.log("socket.on user joined");
     log(data.username + ' joined');
     addParticipantsMessage(data);
   });

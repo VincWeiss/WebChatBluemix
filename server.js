@@ -133,10 +133,10 @@
     	console.log("REGISTER NEW USER CALLED");
 		var usern = data.name;
 		var pass = data.pw;
-		console.log("REGISTER NEW USER CALLED 2");
+		var loginStatus;
 		db.get(usern, function(err, dataGet) {
-			console.log("REGISTER NEW USER CALLED 3");
 			if (err){
+				console.log("User is new");
 				  socket.nickname=usern;
 			      users[socket.nickname]=socket;
 			      ++numUsers;
@@ -145,10 +145,21 @@
 			    	  console.log('User isnt registered yet');
 			    	  console.log('Inserted in DB is: ' + usern + " PW: " + pass);
 			    	  if (!err){
-			    		  console.log('Error');
+			    		  console.log('User is now registered');
 			    		  console.log(body);
-			    	  } 				
-			      });/*
+			    	  } 
+			    	  socket.emit('login', {
+					        numUsers: numUsers
+					      });
+			    	  loginStatus = 1;
+			    	  callback(loginStatus);
+				      socket.broadcast.emit('user joined', {
+				    	  username: socket.nickname,
+				    	  numUsers: numUsers
+				      });
+
+			      });
+			      /*
 			      socket.emit('login', {
 			        numUsers: numUsers
 			      });*/
@@ -156,20 +167,20 @@
 			      socket.broadcast.emit('user joined', {
 			        username: socket.nickname,
 			        numUsers: numUsers
-			      });*/
-				  callback(true);
+			      });
 			} else if(data.name in users){
 				console.log('USER ALREADY SIGNED IN');
-					callback(false);
-			} else if(data.pw === dataGet.password){
+				loginStatus = 2;
+				callback(loginStatus);*/
+			} else if( data.pw === dataGet.password && data.pw.length() > 2){
 				socket.nickname=data.name;
 			      users[socket.nickname]=socket;
 			      ++numUsers;
 			      addedUser = true;
 			      db.insert({ _id:data.name, password:data.pw}, function(err, body) {
-			    	  console.log('USER GETS LOGGED IN');
+			    	  console.log('User already registered. Password correct.');
 			    	  if (!err){
-			    		  console.log('Error');
+			    		  console.log('Success');
 			    		  console.log(body);
 			    	  } 				
 			      });
@@ -177,13 +188,17 @@
 			        numUsers: numUsers
 			      });
 			      // echo globally (all clients) that a person has connected
+			      loginStatus = 2;
+			      callback(loginStatus);
 			      socket.broadcast.emit('user joined', {
-			        username: socket.nickname,
-			        numUsers: numUsers
+			    	  username: socket.nickname,
+			    	  numUsers: numUsers
 			      });
-					callback(true);
+					//callback(true);
 			}else {
-					callback(false);
+				loginStatus = 3;
+				callback(loginStatus);
+				//callback(false);
 			}
 			});			
     });	
