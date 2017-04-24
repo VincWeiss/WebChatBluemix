@@ -11,8 +11,7 @@ $(function() {
   // Initialize varibles
   var $window = $(window);
   var $usernameInput = $('.usernameInput'); // Input for username
-  //var $passwordInput = $('.passwordInput'); // Input for username
- // var $passwordInput = "abcdefg";
+  var passwordInput = $('.passwordInput'); // Input for password
   var $messages = $('.messages'); // Messages area
   var $inputMessage = $('.inputMessage'); // Input message input box
   var $loginPage = $('.login.page'); // The login page
@@ -20,18 +19,12 @@ $(function() {
 
   // Prompt for setting a username
   var username;
-  var password;
   var connected = false;
   var typing = false;
   var lastTypingTime;
   var $currentInput = $usernameInput.focus();
+
   var socket = io();
-  // Gets the 'X is typing' messages of a user
-  function getTypingMessages (data) {
-	  return $('.typing.message').filter(function (i) {
-		  return $(this).data('username') === data.username;
-	  });
-  }
 
   function addParticipantsMessage (data) {
     var message = '';
@@ -56,43 +49,23 @@ $(function() {
 	    log(data);
 	  }
 
-  function login() {
-	  $loginPage.fadeOut();
-	  $chatPage.show();
-	  $loginPage.off('click');
-	  $currentInput = $inputMessage.focus();
-	  
-	  // Tell the server your username
-	  socket.emit('add user',  {name:username, pw:'abc'});
-  }
-  
-  function setUsername() {
-	  console.log("Oxi sagt ich soll noch was reinschreiben");
-  }
-  
   // Sets the client's username
-  function depp() {
-
-	username = cleanInput($usernameInput.val().trim());
-    password = "passw0rd";
-    console.log('USERNAME' + username + '   PW' + password);
-
+  function setUsername () {
+    username = cleanInput($usernameInput.val().trim());
+    password = cleanInput($passwordInput.val().trim());
+    
     // If the username is valid
-    socket.emit('Register new user',  {name:username, pw:'abc'}, function(data,callback) {
-    	console.log("socket emit register new user");
-		  if (data){
-			  console.log("DATA TRUE");
-			  login();
-	    } else {
-	    	username = '';
-	    	password = '';
-	    	//$usernameInput = "";
-	    	//$passwordInput = "";
-	    }
-    });
+    if (username && password) {
+      $loginPage.fadeOut();
+      $chatPage.show();
+      $loginPage.off('click');
+      $currentInput = $inputMessage.focus();
+
+      // Tell the server your username
+      socket.emit('add user', { name:username, pw:password});
+    }
   }
 
-  
   // Sends a chat message
   function sendMessage () {
     var message = $inputMessage.val();
@@ -209,7 +182,7 @@ $(function() {
   }
 
   // Updates the typing event
-  function updateTyping() {
+  function updateTyping () {
     if (connected) {
       if (!typing) {
         typing = true;
@@ -217,7 +190,7 @@ $(function() {
       }
       lastTypingTime = (new Date()).getTime();
 
-      setTimeout(function() {
+      setTimeout(function () {
         var typingTimer = (new Date()).getTime();
         var timeDiff = typingTimer - lastTypingTime;
         if (timeDiff >= TYPING_TIMER_LENGTH && typing) {
@@ -228,6 +201,12 @@ $(function() {
     }
   }
 
+  // Gets the 'X is typing' messages of a user
+  function getTypingMessages (data) {
+    return $('.typing.message').filter(function (i) {
+      return $(this).data('username') === data.username;
+    });
+  }
 
   // Gets the color of a username through our hash function
   function getUsernameColor (username) {
@@ -250,14 +229,12 @@ $(function() {
     }
     // When the client hits ENTER on their keyboard
     if (event.which === 13) {
-    	console.log("EVENT ENTER");
       if (username) {
         sendMessage();
         socket.emit('stop typing');
         typing = false;
       } else {
-    	  depp();
-        //setUsername();
+        setUsername();
       }
     }
   });
@@ -275,7 +252,7 @@ $(function() {
 
   // Focus input when clicking on the message input's border
   $inputMessage.click(function () {
-   $inputMessage.focus();
+    $inputMessage.focus();
   });
 
   // Socket events
