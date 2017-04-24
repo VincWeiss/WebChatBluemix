@@ -1,0 +1,32 @@
+ <!doctype html>
+<html lang="en">
+<head>
+  <script src="jquery.min.js"></script>
+  <script src="socket.io/socket.io.js"></script>
+  <script src="main.js"></script>
+  <meta charset="UTF-8">
+  <title>Chillouts</title>
+  <link rel="icon" type="image/png" href="/chillout-favicon.png"/>
+  <link rel="stylesheet" href="/css/style.css"/>
+</head>
+<body>
+  <ul class="pages">
+    <li class="chat page">
+      <div class="chatArea">
+        <ul class="messages"></ul>
+	    <input class="inputMessage" placeholder="Type here..."/>
+      </div>
+    </li>
+    <li class="login page">
+      <div class="form">
+        <h3 class="title">Choose Your Nickname:</h3>
+        <input class="usernameInput" type="text" maxlength="16" />
+        <p class="unHint">Max. 16 characters!</p>
+        <h3 class="pw">Choose Your Password:</h3>
+        <input class="passwordInput" type="password" maxlength="12" />
+        <p class="pwHint">Max. 12 characters!</p>
+      </div>
+    </li>
+  </ul>
+</body>
+</html>
