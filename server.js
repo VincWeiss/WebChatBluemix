@@ -1,6 +1,6 @@
 
   var express = require('express');
-  const tls = requires('tls');
+  var tls = require('tls');
   var fs = require('fs');
   var https = require('https');
   var app = express();
