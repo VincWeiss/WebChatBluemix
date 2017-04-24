@@ -15,7 +15,6 @@
   var prints;  
   var cloudant = {
 		  url : "https://cd01382f-fb5a-4ba8-91eb-90711c0bf890-bluemix:e458604d6682e3144429086aed374ded2ae1944e91dfa08218a6a27155affab7@cd01382f-fb5a-4ba8-91eb-90711c0bf890-bluemix.cloudant.com"          	
-			  // TODO: Update                  
   }; 
   var nano = require("nano")(cloudant.url);
   var db = nano.db.use("usercredentials");

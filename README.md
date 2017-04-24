@@ -1,14 +1,11 @@
 
 
 # Chillouts
+## Usage use the Chat to communicate with your friends
 
 
 
-## Usage
-
-
-
-## Developing
+## Developing, Selina Magnin, Vincent Weiss, Oxana Doroshkevich
 
 
 
