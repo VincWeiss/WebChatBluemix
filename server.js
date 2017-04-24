@@ -98,7 +98,7 @@
       console.log('I sent it');
     	
     });
-    
+    /*
     // when the client emits 'add user', this listens and executes
     socket.on('add user', function (data) {
       // store the username in the socket session for this client
@@ -123,7 +123,7 @@
         numUsers: numUsers
       });
     });
-  
+  */
     
     
     
@@ -133,18 +133,55 @@
 		var checkUsername=false;
 		var username = data.name;
 		db.get(username, function(err, dataGet) {
-			if (!err){
-				  callback(false);
+			if (err){
+				socket.nickname=data.name;
+			      users[socket.nickname]=socket;
+			      ++numUsers;
+			      addedUser = true;
+			      db.insert({ _id:data.name, password:data.pw}, function(err, body) {
+			    	  console.log('User isnt registered yet');
+			    	  console.log('Inserted in DB is: ' + data.name + " PW: " + data.pw);
+			    	  if (!err){
+			    		  console.log('Error');
+			    		  console.log(body);
+			    	  } 				
+			      });
+			      socket.emit('login', {
+			        numUsers: numUsers
+			      });
+			      // echo globally (all clients) that a person has connected
+			      socket.broadcast.emit('user joined', {
+			        username: socket.nickname,
+			        numUsers: numUsers
+			      });
+				  callback(true);
 			} else if(data.name in users){
+				console.log('USER ALREADY SIGNED IN');
 					callback(false);
-			} else{ 
+			} else if(data.pw === dataGet.password){
+				socket.nickname=data.name;
+			      users[socket.nickname]=socket;
+			      ++numUsers;
+			      addedUser = true;
+			      db.insert({ _id:data.name, password:data.pw}, function(err, body) {
+			    	  console.log('USER GETS LOGGED IN');
+			    	  if (!err){
+			    		  console.log('Error');
+			    		  console.log(body);
+			    	  } 				
+			      });
+			      socket.emit('login', {
+			        numUsers: numUsers
+			      });
+			      // echo globally (all clients) that a person has connected
+			      socket.broadcast.emit('user joined', {
+			        username: socket.nickname,
+			        numUsers: numUsers
+			      });
 					callback(true);
-					//socket.nickname = data.name;
-					//users[socket.nickname] = socket;
-					//users.push(data.name);
-					//ende
+			}else {
+					callback(false);
 			}
-		//ende der methode
 			});			
     });	
 			/*		
