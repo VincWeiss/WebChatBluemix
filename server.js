@@ -1,22 +1,33 @@
 
   var express = require('express');
+  const tls = requires('tls');
+  var fs = require('fs');
+  var https = require('https');
   var app = express();
   var server = require('http').createServer(app);
   var io = require('socket.io').listen(server);
   var port = process.env.PORT || 80;
   var users = [];
-  //var usernames = {};  
+  var usernames = {};  
   var numUsers = 0;
   var userlist = '';
   var cfenv = require('cfenv');	
   var appEnv = cfenv.getAppEnv();
   var dbCreds =  appEnv.getServiceCreds('ChilloutsData');  
   var nano;
-  var prints;  
+  var prints;
   var cloudant = {
 		  url : "https://cd01382f-fb5a-4ba8-91eb-90711c0bf890-bluemix:e458604d6682e3144429086aed374ded2ae1944e91dfa08218a6a27155affab7@cd01382f-fb5a-4ba8-91eb-90711c0bf890-bluemix.cloudant.com"          	
   }; 
   var nano = require("nano")(cloudant.url);
+  
+  var options = {
+		   key  : fs.readFileSync('server.key'),
+		   cert : fs.readFileSync('server.crt')
+		};
+  https.createServer(options, app).listen(3000, function () {
+	   console.log('Started!');
+	});
   var db = nano.db.use("usercredentials");
 	if (dbCreds) {
 		console.log('URL is ' + dbCreds.url); 	
@@ -32,6 +43,31 @@
   app.configure(function(){
 	  app.use(express.static(__dirname + '/public'));
   });
+  
+  var fs = require('fs');
+
+  function setup (ssl) {
+     if (ssl && ssl.active) {
+        return {
+           key  : fs.readFileSync(ssl.key),
+           cert : fs.readFileSync(ssl.certificate)
+        };
+     }
+  }
+
+  function start (app, options) {
+     if (options) {
+        return require('https').createServer(options, app);
+     }
+     return require('http').createServer(app);
+  }
+
+  module.exports = {
+     create: function (settings, app, cb) {
+        var options = setup(settings.ssl);
+        return start(app, options).listen(settings.port, cb);
+     }
+  };
   
   app.get('*', function (req, res){
 	  res.sendfile(__dirname + '/public/index.html');
