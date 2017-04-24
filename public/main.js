@@ -11,7 +11,7 @@ $(function() {
   // Initialize varibles
   var $window = $(window);
   var $usernameInput = $('.usernameInput'); // Input for username
-  //var passwordInput = $('.passwordInput'); // Input for password
+  var $passwordInput = $('.passwordInput'); // Input for password
   var $messages = $('.messages'); // Messages area
   var $inputMessage = $('.inputMessage'); // Input message input box
   var $loginPage = $('.login.page'); // The login page
@@ -51,8 +51,10 @@ $(function() {
 
   // Sets the client's username
   function setUsername () {
+	var password = $passwordInput.val();
     username = cleanInput($usernameInput.val().trim());
     
+    console.log('pw' + password);
     // If the username is valid
     if (username) {
       $loginPage.fadeOut();
