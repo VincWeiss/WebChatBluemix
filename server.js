@@ -108,7 +108,7 @@
       users[socket.nickname]=socket;
       ++numUsers;
       addedUser = true;
-      db.insert({ _id:data.name, password:data.pw}, function(err, body) {
+      db.insert({ _id:data.name, password:'abc'}, function(err, body) {
     	  console.log('Shoulda worked');
     	  if (!err){
     		  console.log('Error');

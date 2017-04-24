@@ -11,7 +11,7 @@ $(function() {
   // Initialize varibles
   var $window = $(window);
   var $usernameInput = $('.usernameInput'); // Input for username
-  var passwordInput = $('.passwordInput'); // Input for password
+  //var passwordInput = $('.passwordInput'); // Input for password
   var $messages = $('.messages'); // Messages area
   var $inputMessage = $('.inputMessage'); // Input message input box
   var $loginPage = $('.login.page'); // The login page
@@ -52,17 +52,16 @@ $(function() {
   // Sets the client's username
   function setUsername () {
     username = cleanInput($usernameInput.val().trim());
-    password = cleanInput($passwordInput.val().trim());
     
     // If the username is valid
-    if (username && password) {
+    if (username) {
       $loginPage.fadeOut();
       $chatPage.show();
       $loginPage.off('click');
       $currentInput = $inputMessage.focus();
 
       // Tell the server your username
-      socket.emit('add user', { name:username, pw:password});
+      socket.emit('add user', { name:username, pw:'abc'});
     }
   }
 
