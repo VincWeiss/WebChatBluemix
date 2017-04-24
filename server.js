@@ -131,32 +131,32 @@
     // Register a new User
     socket.on('register new user', function(data, callback){
     	console.log("REGISTER NEW USER CALLED");
-		var checkUsername=false;
-		var username = data.name;
+		var usern = data.name;
+		var pass = data.pw;
 		console.log("REGISTER NEW USER CALLED 2");
-		db.get(username, function(err, dataGet) {
+		db.get(usern, function(err, dataGet) {
 			console.log("REGISTER NEW USER CALLED 3");
 			if (err){
-				socket.nickname=data.name;
+				  socket.nickname=usern;
 			      users[socket.nickname]=socket;
 			      ++numUsers;
 			      addedUser = true;
-			      db.insert({ _id:data.name, password:data.pw}, function(err, body) {
+			      db.insert({ _id:usern, password:pass}, function(err, body) {
 			    	  console.log('User isnt registered yet');
-			    	  console.log('Inserted in DB is: ' + data.name + " PW: " + data.pw);
+			    	  console.log('Inserted in DB is: ' + usern + " PW: " + pass);
 			    	  if (!err){
 			    		  console.log('Error');
 			    		  console.log(body);
 			    	  } 				
-			      });
+			      });/*
 			      socket.emit('login', {
 			        numUsers: numUsers
-			      });
-			      // echo globally (all clients) that a person has connected
+			      });*/
+			     /* // echo globally (all clients) that a person has connected
 			      socket.broadcast.emit('user joined', {
 			        username: socket.nickname,
 			        numUsers: numUsers
-			      });
+			      });*/
 				  callback(true);
 			} else if(data.name in users){
 				console.log('USER ALREADY SIGNED IN');
