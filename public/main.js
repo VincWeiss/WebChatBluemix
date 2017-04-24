@@ -222,7 +222,6 @@ $(function() {
   }
 
   // Keyboard events
-
   $window.keydown(function (event) {
     // Auto-focus the current input when a key is typed
     if (!(event.ctrlKey || event.metaKey || event.altKey)) {
@@ -247,9 +246,9 @@ $(function() {
   // Click events
 
   // Focus input when clicking anywhere on login page
-  $loginPage.click(function () {
+  //$loginPage.click(function () {
     //$currentInput.focus();
-  });
+  //});
 
   // Focus input when clicking on the message input's border
   $inputMessage.click(function () {
