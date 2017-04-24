@@ -133,7 +133,9 @@
     	console.log("REGISTER NEW USER CALLED");
 		var checkUsername=false;
 		var username = data.name;
+		console.log("REGISTER NEW USER CALLED 2");
 		db.get(username, function(err, dataGet) {
+			console.log("REGISTER NEW USER CALLED 3");
 			if (err){
 				socket.nickname=data.name;
 			      users[socket.nickname]=socket;
