@@ -26,6 +26,12 @@ $(function() {
   var lastTypingTime;
   var $currentInput = $usernameInput.focus();
   var socket = io();
+  // Gets the 'X is typing' messages of a user
+  function getTypingMessages (data) {
+	  return $('.typing.message').filter(function (i) {
+		  return $(this).data('username') === data.username;
+	  });
+  }
 
   function addParticipantsMessage (data) {
     var message = '';
@@ -66,27 +72,21 @@ $(function() {
   
   // Sets the client's username
   function depp() {
-	console.log('function setUsername ()');
-    username = cleanInput($usernameInput.val().trim());
-    //password = cleanInput($passwordInput.val().trim());
-    //console.log('PW SHOULD BE:        ' + $passwordInput.val());
-    console.log('PW is:        ' + password);
-   // password = $passwordInput.val();
-    console.log('function setUsername ()');
+
+	username = cleanInput($usernameInput.val().trim());
+    password = "passw0rd";
     console.log('USERNAME' + username + '   PW' + password);
+
     // If the username is valid
-    
-    socket.emit('Register new user',  {name:username, pw:'abc'}, function(data) {
+    socket.emit('Register new user',  {name:username, pw:'abc'}, function(data,callback) {
     	console.log("socket emit register new user");
 		  if (data){
 			  console.log("DATA TRUE");
 			  login();
-			  
-			  console.log("ADD USER");
 	    } else {
-	    	username = "";
-	    	password = "";
-	    	$usernameInput = "";
+	    	username = '';
+	    	password = '';
+	    	//$usernameInput = "";
 	    	//$passwordInput = "";
 	    }
     });
@@ -209,7 +209,7 @@ $(function() {
   }
 
   // Updates the typing event
-  function updateTyping () {
+  function updateTyping() {
     if (connected) {
       if (!typing) {
         typing = true;
@@ -217,7 +217,7 @@ $(function() {
       }
       lastTypingTime = (new Date()).getTime();
 
-      setTimeout(function () {
+      setTimeout(function() {
         var typingTimer = (new Date()).getTime();
         var timeDiff = typingTimer - lastTypingTime;
         if (timeDiff >= TYPING_TIMER_LENGTH && typing) {
@@ -228,12 +228,6 @@ $(function() {
     }
   }
 
-  // Gets the 'X is typing' messages of a user
-  function getTypingMessages (data) {
-    return $('.typing.message').filter(function (i) {
-      return $(this).data('username') === data.username;
-    });
-  }
 
   // Gets the color of a username through our hash function
   function getUsernameColor (username) {
@@ -262,7 +256,8 @@ $(function() {
         socket.emit('stop typing');
         typing = false;
       } else {
-        setUsername();
+    	  depp();
+        //setUsername();
       }
     }
   });
