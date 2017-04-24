@@ -63,6 +63,7 @@ $(function() { // change done
     socket.emit('register new user', { name:username, pw:password});
     // If the username is valid
     if (callback) {
+      console.log('Callback ' + callback);
       $loginPage.fadeOut();
       $chatPage.show();
       $loginPage.off('click');

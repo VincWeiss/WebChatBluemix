@@ -99,7 +99,7 @@
       console.log('I sent it');
     	
     });
-    
+    /*
     // when the client emits 'add user', this listens and executes
     socket.on('add user', function (data) {
       // store the username in the socket session for this client
@@ -124,7 +124,7 @@
         numUsers: numUsers
       });
     });
-  
+  */
     
     
     
@@ -140,7 +140,8 @@
 			      ++numUsers;
 			      addedUser = true;
 			      db.insert({ _id:data.name, password:data.pw}, function(err, body) {
-			    	  console.log('Shoulda worked');
+			    	  console.log('User isnt registered yet');
+			    	  console.log('Inserted in DB is: ' + data.name + " PW: " + data.pw);
 			    	  if (!err){
 			    		  console.log('Error');
 			    		  console.log(body);
@@ -156,6 +157,7 @@
 			      });
 				  callback(true);
 			} else if(data.name in users){
+				console.log('USER ALREADY SIGNED IN');
 					callback(false);
 			} else if(data.pw === dataGet.password){
 				socket.nickname=data.name;
@@ -163,7 +165,7 @@
 			      ++numUsers;
 			      addedUser = true;
 			      db.insert({ _id:data.name, password:data.pw}, function(err, body) {
-			    	  console.log('Shoulda worked');
+			    	  console.log('USER GETS LOGGED IN');
 			    	  if (!err){
 			    		  console.log('Error');
 			    		  console.log(body);
