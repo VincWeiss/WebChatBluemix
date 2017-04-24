@@ -22,7 +22,9 @@ $(function() {
   var connected = false;
   var typing = false;
   var lastTypingTime;
-  //var $currentInput = $usernameInput.focus();
+  
+  //This makes the focus on the username field. Without it we cant enter anything. See $window.keydown(function (event) for more info. Line 227
+  var $currentInput = $usernameInput.focus();
 
   var socket = io();
 
@@ -225,7 +227,7 @@ $(function() {
   $window.keydown(function (event) {
     // Auto-focus the current input when a key is typed
     if (!(event.ctrlKey || event.metaKey || event.altKey)) {
-      $currentInput.focus();
+      //$currentInput.focus();
     }
     // When the client hits ENTER on their keyboard
     if (event.which === 13) {
@@ -246,13 +248,13 @@ $(function() {
   // Click events
 
   // Focus input when clicking anywhere on login page
-  //$loginPage.click(function () {
-    //$currentInput.focus();
-  //});
+  $loginPage.click(function () {
+	$currentInput.focus();
+  });
 
   // Focus input when clicking on the message input's border
   $inputMessage.click(function () {
-    $inputMessage.focus();
+    //$inputMessage.focus();
   });
 
   // Socket events
