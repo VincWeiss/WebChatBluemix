@@ -60,9 +60,9 @@ $(function() {
 	// Sets the client's username
 	function setUsername () {
 		var password = $passwordInput.val();
-//		if(!(checkPwValid(password))){
-//			if(!alert("Password must at least contain four characters! \n It musn't contain spaces!")){window.location.reload();}		
-//		} else {
+		if(!(checkPwValid(password))){
+			if(!alert("Password must at least contain four characters! \n It musn't contain spaces!")){window.location.reload();}		
+		} else {
 			username = cleanInput($usernameInput.val().trim());
 			console.log('pw' + password);
 			socket.emit('register new user', { name:username, pw:password},function(callbackValue){
@@ -89,9 +89,9 @@ $(function() {
 					break;
 				}
 			});
-//		}
+		}
 	}
-/*
+
 	function checkPwValid(password){
 		var pwValid = false;
 		if(password.length === 0 || password === '' || password.trim() === '' || password.trim().length === 0){
@@ -104,7 +104,7 @@ $(function() {
 			pwValid == true;
 		} return pwValid;
 	}
-*/
+
   // Sends a chat message
   function sendMessage () {
     var message = $inputMessage.val();
