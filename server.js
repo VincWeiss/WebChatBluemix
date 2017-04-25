@@ -172,7 +172,7 @@
 				console.log('USER ALREADY SIGNED IN');
 				loginStatus = 2;
 				callback(loginStatus);*/
-			} else if( data.pw === dataGet.password && data.pw.length() > 2){
+			} else if( data.pw === dataGet.password){
 				socket.nickname=data.name;
 			      users[socket.nickname]=socket;
 			      ++numUsers;
