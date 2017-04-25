@@ -1,3 +1,5 @@
+/** CloudComputing WebChat on IBM Bluemix **/
+/** Server Side App **/
 
   var express = require('express');
   var https = require('https');
@@ -150,19 +152,6 @@
 				      });
 
 			      });
-			      /*
-			      socket.emit('login', {
-			        numUsers: numUsers
-			      });*/
-			     /* // echo globally (all clients) that a person has connected
-			      socket.broadcast.emit('user joined', {
-			        username: socket.nickname,
-			        numUsers: numUsers
-			      });
-			} else if(data.name in users){
-				console.log('USER ALREADY SIGNED IN');
-				loginStatus = 2;
-				callback(loginStatus);*/
 			} else if( data.pw === dataGet.password){
 				socket.nickname=data.name;
 			      users[socket.nickname]=socket;
@@ -193,28 +182,6 @@
 			}
 			});			
     });	
-			/*		
-					db.insert({ _id: data.name, password: data.password  }, function(err, body) {
-					  if (!err){
-						  console.log(body);
-					  }
-					});
-					socket.nickname=data.name;
-				    //changed
-				      users[socket.nickname]=socket;
-				      //users.push(socket.nickname);
-				      ++numUsers;
-				      socket.emit('login', {
-				          numUsers: numUsers
-				        });
-					socket.broadcast.emit('user joined', {
-				        username: socket.nickname,
-				        numUsers: numUsers
-				      });
-				}
-		});
-    });
-    */
     
     // when the client emits 'typing', broadcast it to others
     socket.on('typing', function () {
