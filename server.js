@@ -1,23 +1,24 @@
 
   var express = require('express');
+  var https = require('https');
   var app = express();
   var server = require('http').createServer(app);
   var io = require('socket.io').listen(server);
   var port = process.env.PORT || 80;
   var users = [];
-  //var usernames = {};  
+  var usernames = {};  
   var numUsers = 0;
   var userlist = '';
   var cfenv = require('cfenv');	
   var appEnv = cfenv.getAppEnv();
   var dbCreds =  appEnv.getServiceCreds('ChilloutsData');  
   var nano;
-  var prints;  
+  var prints;
   var cloudant = {
 		  url : "https://cd01382f-fb5a-4ba8-91eb-90711c0bf890-bluemix:e458604d6682e3144429086aed374ded2ae1944e91dfa08218a6a27155affab7@cd01382f-fb5a-4ba8-91eb-90711c0bf890-bluemix.cloudant.com"          	
-			  // TODO: Update                  
   }; 
   var nano = require("nano")(cloudant.url);
+
   var db = nano.db.use("usercredentials");
 	if (dbCreds) {
 		console.log('URL is ' + dbCreds.url); 	
@@ -32,6 +33,23 @@
   });
   app.configure(function(){
 	  app.use(express.static(__dirname + '/public'));
+  });
+  
+  
+  app.enable('trust proxy');
+  app.use(function (req, res, next) { 	
+	  console.log("USE Function");
+	  if (req.secure) {             
+		  // request was via https, so do no special handling     	
+		  console.log("---------------------------------secure https");   
+		  next();
+	  } else {
+		 // request was via http, so redirect to https
+		  //<link rel="icon" type="image/png" href="/chillout-favicon.png"/>
+		 console.log("_____________________________________ redirect else");
+		 res.redirect('https://' + req.headers.host + req.url);
+		 console.log("________---------______---------___________ " + 'https://' + req.headers.host + req.url);
+	  } 
   });
   
   app.get('*', function (req, res){
@@ -62,7 +80,7 @@
                 }
             }
         	console.log(msg);
-        	 socket.emit('list', msg);
+        	socket.emit('list', msg);
 
     	}else if(data.indexOf('@') === 0){
     		console.log('found /@');
@@ -99,77 +117,61 @@
       console.log('I sent it');
     	
     });
-    /*
-    // when the client emits 'add user', this listens and executes
-    socket.on('add user', function (data) {
-      // store the username in the socket session for this client
-      // add the client's username to the global list
-      socket.nickname=data.name;
-      users[socket.nickname]=socket;
-      ++numUsers;
-      addedUser = true;
-      db.insert({ _id:data.name, password:data.pw}, function(err, body) {
-    	  console.log('Shoulda worked');
-    	  if (!err){
-    		  console.log('Error');
-    		  console.log(body);
-    	  } 				
-      });
-      socket.emit('login', {
-        numUsers: numUsers
-      });
-      // echo globally (all clients) that a person has connected
-      socket.broadcast.emit('user joined', {
-        username: socket.nickname,
-        numUsers: numUsers
-      });
-    });
-  */
-    
-    
-    
+  
+  
     // Register a new User
     socket.on('register new user', function(data, callback){
     	console.log("REGISTER NEW USER CALLED");
-		var checkUsername=false;
-		var username = data.name;
-		console.log("REGISTER NEW USER CALLED 2");
-		db.get(username, function(err, dataGet) {
-			console.log("REGISTER NEW USER CALLED 3");
+		var usern = data.name;
+		var pass = data.pw;
+		var loginStatus;
+		db.get(usern, function(err, dataGet) {
 			if (err){
-				socket.nickname=data.name;
+				console.log("User is new");
+				  socket.nickname=usern;
 			      users[socket.nickname]=socket;
 			      ++numUsers;
 			      addedUser = true;
-			      db.insert({ _id:data.name, password:data.pw}, function(err, body) {
+			      db.insert({ _id:usern, password:pass}, function(err, body) {
 			    	  console.log('User isnt registered yet');
-			    	  console.log('Inserted in DB is: ' + data.name + " PW: " + data.pw);
+			    	  console.log('Inserted in DB is: ' + usern + " PW: " + pass);
 			    	  if (!err){
-			    		  console.log('Error');
+			    		  console.log('User is now registered');
 			    		  console.log(body);
-			    	  } 				
+			    	  } 
+			    	  socket.emit('login', {
+					        numUsers: numUsers
+					      });
+			    	  loginStatus = 1;
+			    	  callback(loginStatus);
+				      socket.broadcast.emit('user joined', {
+				    	  username: socket.nickname,
+				    	  numUsers: numUsers
+				      });
+
 			      });
+			      /*
 			      socket.emit('login', {
 			        numUsers: numUsers
-			      });
-			      // echo globally (all clients) that a person has connected
+			      });*/
+			     /* // echo globally (all clients) that a person has connected
 			      socket.broadcast.emit('user joined', {
 			        username: socket.nickname,
 			        numUsers: numUsers
 			      });
-				  callback(true);
 			} else if(data.name in users){
 				console.log('USER ALREADY SIGNED IN');
-					callback(false);
-			} else if(data.pw === dataGet.password){
+				loginStatus = 2;
+				callback(loginStatus);*/
+			} else if( data.pw === dataGet.password){
 				socket.nickname=data.name;
 			      users[socket.nickname]=socket;
 			      ++numUsers;
 			      addedUser = true;
 			      db.insert({ _id:data.name, password:data.pw}, function(err, body) {
-			    	  console.log('USER GETS LOGGED IN');
+			    	  console.log('User already registered. Password correct.');
 			    	  if (!err){
-			    		  console.log('Error');
+			    		  console.log('Success');
 			    		  console.log(body);
 			    	  } 				
 			      });
@@ -177,13 +179,17 @@
 			        numUsers: numUsers
 			      });
 			      // echo globally (all clients) that a person has connected
+			      loginStatus = 2;
+			      callback(loginStatus);
 			      socket.broadcast.emit('user joined', {
-			        username: socket.nickname,
-			        numUsers: numUsers
+			    	  username: socket.nickname,
+			    	  numUsers: numUsers
 			      });
-					callback(true);
+					//callback(true);
 			}else {
-					callback(false);
+				loginStatus = 3;
+				callback(loginStatus);
+				//callback(false);
 			}
 			});			
     });	
