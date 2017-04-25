@@ -1,7 +1,5 @@
 
   var express = require('express');
-  var tls = require('tls');
-  var fs = require('fs');
   var https = require('https');
   var app = express();
   var server = require('http').createServer(app);
@@ -20,15 +18,7 @@
 		  url : "https://cd01382f-fb5a-4ba8-91eb-90711c0bf890-bluemix:e458604d6682e3144429086aed374ded2ae1944e91dfa08218a6a27155affab7@cd01382f-fb5a-4ba8-91eb-90711c0bf890-bluemix.cloudant.com"          	
   }; 
   var nano = require("nano")(cloudant.url);
-  
-  console.log("_____________________________________________________neuer Log" + fs);
-  var options = {
-		   key  : fs.readFileSync('server.key'),
-		   cert : fs.readFileSync('server.crt')
-		};
-  https.createServer(options, app).listen(3000, function () {
-	   console.log('Started!');
-	});
+
   var db = nano.db.use("usercredentials");
 	if (dbCreds) {
 		console.log('URL is ' + dbCreds.url); 	
@@ -45,30 +35,21 @@
 	  app.use(express.static(__dirname + '/public'));
   });
   
-  var fs = require('fs');
-
-  function setup (ssl) {
-     if (ssl && ssl.active) {
-        return {
-           key  : fs.readFileSync(ssl.key),
-           cert : fs.readFileSync(ssl.certificate)
-        };
-     }
-  }
-
-  function start (app, options) {
-     if (options) {
-        return require('https').createServer(options, app);
-     }
-     return require('http').createServer(app);
-  }
-
-  module.exports = {
-     create: function (settings, app, cb) {
-        var options = setup(settings.ssl);
-        return start(app, options).listen(settings.port, cb);
-     }
-  };
+  
+  app.enable('trust proxy');
+  app.use(function (req, res, next) { 	
+	  console.log("USE Function");
+	  if (req.secure) {             
+		  // request was via https, so do no special handling     	
+		  console.log("---------------------------------secure https");   
+		  next();
+	  } else {
+		 // request was via http, so redirect to https     	
+		 console.log("_____________________________________ redirect else");
+		 res.redirect('https://' + req.headers.host + req.url);
+		 console.log("________---------______---------___________ " + 'https://' + req.headers.host + req.url);
+	  } 
+  });
   
   app.get('*', function (req, res){
 	  res.sendfile(__dirname + '/public/index.html');
@@ -98,7 +79,7 @@
                 }
             }
         	console.log(msg);
-        	 socket.emit('list', msg);
+        	socket.emit('list', msg);
 
     	}else if(data.indexOf('@') === 0){
     		console.log('found /@');
@@ -134,8 +115,9 @@
       });}
       console.log('I sent it');
     	
-    });   
-    
+    });
+  
+  
     // Register a new User
     socket.on('register new user', function(data, callback){
     	console.log("REGISTER NEW USER CALLED");
