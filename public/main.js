@@ -60,7 +60,8 @@ $(function() {
 	// Sets the client's username
 	function setUsername () {
 		var password = $passwordInput.val();
-		if((checkPwValid(password)) === false){
+		var pwValid = checkPwValid(password);
+		if(!(pwValid)){
 			if(!alert("Password must at least contain four characters! \n It musn't contain spaces!")){window.location.reload();}		
 		} else {
 			username = cleanInput($usernameInput.val().trim());
@@ -93,16 +94,16 @@ $(function() {
 	}
 
 	function checkPwValid(password){
-		var pwValid = false;
-		if(password.length === 0 || password === '' || password.trim() === '' || password.trim().length === 0){
-			pwValid == false;
+		var valid = false;
+		if(password.length == 0 || password == '' || password.trim() == '' || password.trim().length == 0){
+			valid == false;
 		} else if (/\s/.test(password)){
-			pwValid == false;
+			valid == false;
 		} else if (password.length < 4){
-			pwValid == false;
+			valid == false;
 		} else {
-			pwValid == true;
-		} return pwValid;
+			valid == true;
+		} return valid;
 	}
 
   // Sends a chat message
