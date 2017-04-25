@@ -60,32 +60,49 @@ $(function() {
 // Sets the client's username
 function setUsername () {
 	var password = $passwordInput.val();
-	username = cleanInput($usernameInput.val().trim());
-	console.log('pw' + password);
-	socket.emit('register new user', { name:username, pw:password},function(callbackValue){
-		console.log('Callback ' + callbackValue);
-		switch(callbackValue){
-		case 1:
-			$loginPage.fadeOut();
-			$chatPage.show();
-			$loginPage.off('click');
-			$currentInput = $inputMessage.focus();
-			log('Welcome ' + username);
-			// Tell the server your username
-			break;
-		case 2:
-			$loginPage.fadeOut();
-			$chatPage.show();
-			$loginPage.off('click');
-			$currentInput = $inputMessage.focus();
-			log('Welcome back ' + username);
-			// User already registered
-			break;
-		case 3:
-			if(!alert('Username already taken! Or Wrong Password!')){window.location.reload();}
-			break;
-		}
-	});
+	if(!(checkPwValid(password))){
+		if(!alert("Password must at least contain four characters! \n It musn't contain spaces!")){window.location.reload();}		
+	} else {
+		username = cleanInput($usernameInput.val().trim());
+		console.log('pw' + password);
+		socket.emit('register new user', { name:username, pw:password},function(callbackValue){
+			console.log('Callback ' + callbackValue);
+			switch(callbackValue){
+			case 1:
+				$loginPage.fadeOut();
+				$chatPage.show();
+				$loginPage.off('click');
+				$currentInput = $inputMessage.focus();
+				log('Welcome ' + username);
+				// Tell the server your username
+				break;
+			case 2:
+				$loginPage.fadeOut();
+				$chatPage.show();
+				$loginPage.off('click');
+				$currentInput = $inputMessage.focus();
+				log('Welcome back ' + username);
+				// User already registered
+				break;
+			case 3:
+				if(!alert('Username already taken! Or Wrong Password!')){window.location.reload();}
+				break;
+			}
+		});
+	}
+}
+
+function checkPwValid(password){
+	var pwValid = false;
+	if(password.length === 0 || password === '' || password.trim() === '' || password.trim().length === 0){
+		pwValid == false;
+	} else if (/\s/.test(password)){
+		pwValid == false;
+	} else if (password.length < 4){
+		pwValid == false;
+	} else {
+		pwValid == true;
+	} return pwValid;
 }
 
   // Sends a chat message
