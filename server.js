@@ -56,18 +56,21 @@
 //  }
 
   function start (app, options) {
+	 console.log("____________________________new log the start app options function");
      if (options) {
+    	console.log("____________________________the if options ----> https");
         return require('https').createServer(options, app);
      }
+     console.log("____________________________no if options ----> http");
      return require('http').createServer(app);
   }
 
-  module.exports = {
-     create: function (settings, app, cb) {
-        var options = setup(settings.ssl);
-        return start(app, options).listen(settings.port, cb);
-     }
-  };
+//  module.exports = {
+//     create: function (settings, app, cb) {
+//        var options = setup(settings.ssl);
+//        return start(app, options).listen(settings.port, cb);
+//     }
+//  };
   
   app.get('*', function (req, res){
 	  res.sendfile(__dirname + '/public/index.html');
