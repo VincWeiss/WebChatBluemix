@@ -1,6 +1,5 @@
 
   var express = require('express');
-  //const tls = require('tls');
   var tls = require('tls');
   var fs = require('fs');
   var https = require('https');
@@ -22,6 +21,7 @@
   }; 
   var nano = require("nano")(cloudant.url);
   
+  console.log("_____________________________________________________" + fs.re);
   var options = {
 		   key  : fs.readFileSync('server.key'),
 		   cert : fs.readFileSync('server.crt')
