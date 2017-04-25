@@ -47,8 +47,9 @@
 		 // request was via http, so redirect to https
 		  //<link rel="icon" type="image/png" href="/chillout-favicon.png"/>
 		 console.log("_____________________________________ redirect else");
-		 res.redirect('https://' + req.headers.host + req.url);
+		 res.redirect('https://' + req.headers.host + req.url + "/favicon.ico");
 		 console.log("________---------______---------___________ " + 'https://' + req.headers.host + req.url);
+		 // https://chilloutsdb.mybluemix.net/favicon.ico
 	  } 
   });
   
