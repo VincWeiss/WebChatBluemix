@@ -104,7 +104,7 @@ $(function() {
 		} else {
 			valid == true;
 		} return valid;
-*/	}
+	}*/
 
   // Sends a chat message
   function sendMessage () {
