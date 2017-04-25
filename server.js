@@ -36,30 +36,20 @@
   });
   
   
-  app.enable('trust proxy'); 
+  app.enable('trust proxy');
   app.use(function (req, res, next) { 	
-	  console.log("USE Function");     
+	  console.log("USE Function");
 	  if (req.secure) {             
 		  // request was via https, so do no special handling     	
-		  console.log("Hodensack USEFunction");             
-		  next();    
-	  } else {            
+		  console.log("---------------------------------secure https");   
+		  next();
+	  } else {
 		 // request was via http, so redirect to https     	
-		 console.log("Sacknase USEFunction");             
-		 res.redirect('https://' + req.headers.host + req.url);     
+		 console.log("_____________________________________ redirect else");
+		 res.redirect('https://' + req.headers.host + req.url);
+		 console.log("________---------______---------___________ " + 'https://' + req.headers.host + req.url);
 	  } 
   });
-  
-//  app.use('/path', function(req, res, next) { 
-//	  console.log("____________________ app.use http function");
-//	  if(!req.secure) {
-//		console.log("________________________________ the if !res.secure");
-//	    var secureUrl = "https://" + req.headers['host'] + req.url; 
-//	    res.writeHead(301, { "Location":  secureUrl });
-//	    res.end();
-//	  }
-//	  next();
-//	});
   
   app.get('*', function (req, res){
 	  res.sendfile(__dirname + '/public/index.html');
