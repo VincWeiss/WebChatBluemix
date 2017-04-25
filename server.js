@@ -35,8 +35,10 @@
 	  app.use(express.static(__dirname + '/public'));
   });
   
-  app.use('/path', function(req, res, next) {  
+  app.use('/path', function(req, res, next) { 
+	  console.log("____________________ app.use http function");
 	  if(!req.secure) {
+		console.log("________________________________ the if !res.secure");
 	    var secureUrl = "https://" + req.headers['host'] + req.url; 
 	    res.writeHead(301, { "Location":  secureUrl });
 	    res.end();
