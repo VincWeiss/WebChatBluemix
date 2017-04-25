@@ -44,7 +44,8 @@
 		  console.log("---------------------------------secure https");   
 		  next();
 	  } else {
-		 // request was via http, so redirect to https     	
+		 // request was via http, so redirect to https
+		  //<link rel="icon" type="image/png" href="/chillout-favicon.png"/>
 		 console.log("_____________________________________ redirect else");
 		 res.redirect('https://' + req.headers.host + req.url);
 		 console.log("________---------______---------___________ " + 'https://' + req.headers.host + req.url);
