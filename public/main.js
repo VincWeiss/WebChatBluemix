@@ -60,7 +60,7 @@ $(function() {
 	// Sets the client's username
 	function setUsername () {
 		var password = $passwordInput.val();
-		if(!(checkPwValid(password))){
+		if((checkPwValid(password)) === false){
 			if(!alert("Password must at least contain four characters! \n It musn't contain spaces!")){window.location.reload();}		
 		} else {
 			username = cleanInput($usernameInput.val().trim());
