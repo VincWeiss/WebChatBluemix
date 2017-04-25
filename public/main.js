@@ -1,44 +1,45 @@
 $(function() {
-  var FADE_TIME = 150; // ms
-  var TYPING_TIMER_LENGTH = 400; // ms
-  var COLORS = [
-	  
-    '#e21400', '#91580f', '#f8a700', '#f78b00',
-    '#508900', '#366420', '#0da784', '#4ae8c4',
-    '#3b88eb', '#3824aa', '#a700ff', '#d300e7', 
-    '#ed72e8', '#ed72a4', '#780a36', '#846132', 
-    '#5a3121'
-  ];
-
-  // Initialize varibles
-  var $window = $(window);
-  var $usernameInput = $('.usernameInput'); // Input for username
-  var $passwordInput = $('.passwordInput'); // Input for password
-  var $messages = $('.messages'); // Messages area
-  var $inputMessage = $('.inputMessage'); // Input message input box
-  var $loginPage = $('.login.page'); // The login page
-  var $chatPage = $('.chat.page'); // The chatroom page
-
-  // Prompt for setting a username
-  var username;
-  var connected = false;
-  var typing = false;
-  var lastTypingTime;
-  
-  // This makes the focus on the username field. Without it we cant enter
-// anything. See $window.keydown(function (event) for more info. Line 227
-  var $currentInput = $usernameInput.focus();
-  var socket = io();
-
-  function addParticipantsMessage (data) {
-    var message = '';
-    if (data.numUsers === 1) {
-      message += "there's 1 participant";
-    } else {
-      message += "there're " + data.numUsers + " participants";
-    }
-    log(message);
-  }
+	var FADE_TIME = 150; // ms
+	var TYPING_TIMER_LENGTH = 400; // ms
+	var COLORS = [ //nickname colors
+		'#e21400', '#91580f', '#f8a700', '#f78b00',
+		'#508900', '#366420', '#0da784', '#4ae8c4',
+		'#3b88eb', '#3824aa', '#a700ff', '#d300e7',
+		'#ed72e8', '#ed72a4', '#780a36', '#846132', 
+		'#5a3121'
+		];
+	
+	// Initialize varibles
+	var $window = $(window);
+	var $usernameInput = $('.usernameInput'); // Input for username
+	var $passwordInput = $('.passwordInput'); // Input for password
+	var $messages = $('.messages'); // Messages area
+	var $inputMessage = $('.inputMessage'); // Input message input box
+	var $loginPage = $('.login.page'); // The login page
+	var $chatPage = $('.chat.page'); // The chatroom page
+	
+	// Prompt for setting a username
+	var username;
+	var connected = false;
+	var typing = false;
+	var lastTypingTime;
+	
+	// This makes the focus on the username field. Without it we cant enter
+	// anything. See $window.keydown(function (event) for more info. Line 227
+	var $currentInput = $usernameInput.focus();
+	
+	var socket = io();
+	
+	//This logs the current number of participants
+	function addParticipantsMessage (data) {
+		var message = '';
+		if (data.numUsers === 1) {
+			message += "there's 1 participant";
+			} else {
+				message += "there're " + data.numUsers + " participants";
+				}
+		log(message);
+	}
   
   function addPrivateMessage (data) {
 	    log(data.message);
