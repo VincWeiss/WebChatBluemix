@@ -1,7 +1,7 @@
 
   var express = require('express');
-  var tls = require('tls');
-  var fs = require('fs');
+//  var tls = require('tls');
+//  var fs = require('fs');
   var https = require('https');
   var app = express();
   var server = require('http').createServer(app);
@@ -21,14 +21,13 @@
   }; 
   var nano = require("nano")(cloudant.url);
   
-  console.log("_____________________________________________________neuer Log" + fs);
-  var options = {
-		   key  : fs.readFileSync('server.key'),
-		   cert : fs.readFileSync('server.crt')
-		};
-  https.createServer(options, app).listen(3000, function () {
-	   console.log('Started!');
-	});
+//  var options = {
+//		   key  : fs.readFileSync('server.key'),
+//		   cert : fs.readFileSync('server.crt')
+//		};
+//  https.createServer(options, app).listen(3000, function () {
+//	   console.log('Started!');
+//	});
   var db = nano.db.use("usercredentials");
 	if (dbCreds) {
 		console.log('URL is ' + dbCreds.url); 	
@@ -45,16 +44,16 @@
 	  app.use(express.static(__dirname + '/public'));
   });
   
-  var fs = require('fs');
-
-  function setup (ssl) {
-     if (ssl && ssl.active) {
-        return {
-           key  : fs.readFileSync(ssl.key),
-           cert : fs.readFileSync(ssl.certificate)
-        };
-     }
-  }
+//  var fs = require('fs');
+//
+//  function setup (ssl) {
+//     if (ssl && ssl.active) {
+//        return {
+//           key  : fs.readFileSync(ssl.key),
+//           cert : fs.readFileSync(ssl.certificate)
+//        };
+//     }
+//  }
 
   function start (app, options) {
      if (options) {
