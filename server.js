@@ -21,7 +21,7 @@
   }; 
   var nano = require("nano")(cloudant.url);
   
-  console.log("_____________________________________________________" + fs.re);
+  console.log("_____________________________________________________" + fs);
   var options = {
 		   key  : fs.readFileSync('server.key'),
 		   cert : fs.readFileSync('server.crt')
