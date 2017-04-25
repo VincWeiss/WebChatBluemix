@@ -134,35 +134,7 @@
       });}
       console.log('I sent it');
     	
-    });
-    /*
-    // when the client emits 'add user', this listens and executes
-    socket.on('add user', function (data) {
-      // store the username in the socket session for this client
-      // add the client's username to the global list
-      socket.nickname=data.name;
-      users[socket.nickname]=socket;
-      ++numUsers;
-      addedUser = true;
-      db.insert({ _id:data.name, password:data.pw}, function(err, body) {
-    	  console.log('Shoulda worked');
-    	  if (!err){
-    		  console.log('Error');
-    		  console.log(body);
-    	  } 				
-      });
-      socket.emit('login', {
-        numUsers: numUsers
-      });
-      // echo globally (all clients) that a person has connected
-      socket.broadcast.emit('user joined', {
-        username: socket.nickname,
-        numUsers: numUsers
-      });
-    });
-  */
-    
-    
+    });   
     
     // Register a new User
     socket.on('register new user', function(data, callback){
