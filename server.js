@@ -35,7 +35,6 @@
 			next();
 		} else {
 			res.redirect('https://' + req.headers.host);
-			// https://chilloutsdb.mybluemix.net/favicon.ico
 		} 
 	});
   server.listen(port, function () {
@@ -67,9 +66,11 @@
     		console.log(socket.nickname + ' called list');
     		var counter = 0;
     		var msg = '';
+    		console.log('user.length is ' + users.length);
         	for ( counter ; counter < users.length; counter++) {
                 if(counter === 0){ 
                 	msg += users[counter]; 
+                	console.log('User in List at index:' + counter + ' IS ' + users[counter]);
                 } else { 
                 	msg += ', ' + users[counter];
                 }
@@ -124,7 +125,10 @@
 			if (err){
 				console.log("User is new");
 				  socket.nickname=usern;
-			      users[socket.nickname]=socket;
+			      users.push(socket.nickname);
+			      console.log('users[data.name] == ' + users[data.name]);
+			      console.log('socket.nickname ' + socket.nickname);
+			      usernames.push(data.name);
 			      ++numUsers;
 			      addedUser = true;
 			      db.insert({ _id:usern, password:pass}, function(err, body) {
@@ -147,7 +151,8 @@
 			      });
 			} else if( data.pw === dataGet.password){
 				socket.nickname=data.name;
-			      users[socket.nickname]=socket;
+			      users.push(socket.nickname);
+			      usernames.push(data.name);
 			      ++numUsers;
 			      addedUser = true;
 			      db.insert({ _id:data.name, password:data.pw}, function(err, body) {
