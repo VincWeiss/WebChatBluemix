@@ -78,7 +78,7 @@ span.messageBody {
 
 .login.page {
   background-image: url("https://media.giphy.com/media/A06UFEx8jxEwU/giphy.gif");
-  background-repeat: repeat-y;
+  background-repeat: repeat;
   /*background-color: #000;*/
 }
 
