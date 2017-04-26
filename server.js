@@ -82,11 +82,12 @@ io.on('connection', function (socket) {
 				var name;
 				if (user.charAt(0) === '@') {
 					name = user.slice(1);
+					console.log("")
 				}
-				if (name in users){
+				if (name in usernames){
 					privateMessage = 'private: ' + privateMessage;
-					console.log("user[name].id to broadcast " + users[name].id);
-					socket.broadcast.to(users[name].id).emit(
+					console.log("user[name].id to broadcast " + usernames[name].id);
+					socket.broadcast.to(usernames[name].id).emit(
     					'new message',{
     						username: socket.nickname,
     						message: privateMessage,
@@ -196,6 +197,7 @@ io.on('connection', function (socket) {
     	users.splice(users.indexOf(socket.nickname),1);
     	//changed
         delete users[socket.nickname];
+        delete usernames[socket.nickname];
         --numUsers;
   
         // echo globally that this client has left
