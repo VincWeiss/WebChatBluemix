@@ -60,10 +60,10 @@ $(function() {
 	// Sets the client's username
 	function setUsername () {
 		var password = $passwordInput.val();
-//		var pwValid = checkPwValid(password);
-//		if(!(pwValid)){
-//			if(!alert("Password must at least contain four characters! \n It musn't contain spaces!")){window.location.reload();}		
-//		} else {
+		var pwValid = checkPwValid(password);
+		if(!(pwValid)){
+			if(!alert("Password must at least contain four characters! \n It musn't contain spaces!")){window.location.reload();}		
+		} else {
 			username = cleanInput($usernameInput.val().trim());
 			console.log('pw' + password);
 			socket.emit('register new user', { name:username, pw:password},function(callbackValue){
@@ -90,21 +90,22 @@ $(function() {
 					break;
 				}
 			});
-//		}
+		}
 	}
-/*
+
 	function checkPwValid(password){
 		var valid = false;
-		if(password.length == 0 || password == '' || password.trim() == '' || password.trim().length == 0){
-			valid == false;
-		} else if (/\s/.test(password)){
-			valid == false;
-		} else if (password.length < 4){
-			valid == false;
+		if(password.length < 4){
+			valid = false;
+		} else if ((/\s/.test(password))){
+			console.log('PW test for space =' + (/\s/.test(password)));
+			valid = false;
+		} else if (password == '' || password.trim() == '' || password.trim().length == 0){
+			valid = false;
 		} else {
-			valid == true;
+			valid = true;
 		} return valid;
-	}*/
+	}
 	
 	// Sends a chat message
 	function sendMessage () {
