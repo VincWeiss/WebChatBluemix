@@ -57,16 +57,32 @@ $(function() {
 		log(data);
 	}
 	
+	function checkPwValid(password){
+		var valid = false;
+		if(password.length < 4){
+			valid = false;
+//		} else if ((/\s/.test(password))){
+//			console.log('PW test for space =' + (/\s/.test(password)));
+//			valid = false;
+		} else if (password === '' || password.trim() === '' || password.trim().length === 0){
+			valid = false;
+		} else {
+			valid = true;
+		} return valid;
+	}
+	
 	// Sets the client's username
 	function setUsername () {
 		var password = $passwordInput.val();
-//		var pwValid = checkPwValid(password);
-//		if(!(pwValid)){
-//			if(!alert("Password must at least contain four characters! \n It musn't contain spaces!")){window.location.reload();}		
-//		} else {
+		var pwValid = checkPwValid(password);
+		if(!(pwValid)){
+			if(!alert("Password must at least contain four characters! \n It musn't contain spaces!")) {
+				$window.location.reload();
+			}		
+		} else {
 			username = cleanInput($usernameInput.val().trim());
 			console.log('pw' + password);
-			socket.emit('register new user', { name:username, pw:password},function(callbackValue){
+			socket.emit('register new user', { name:username, pw:password},function(callbackValue) {
 				console.log('Callback ' + callbackValue);
 				switch(callbackValue){
 				case 1:
@@ -76,7 +92,7 @@ $(function() {
 					$currentInput = $inputMessage.focus();
 					log('Welcome ' + username);
 					// Tell the server your username
-				break;
+					break;
 				case 2:
 					$loginPage.fadeOut();
 					$chatPage.show();
@@ -90,23 +106,9 @@ $(function() {
 					break;
 				}
 			});
-//		}
+		}
 	}
-/*
-	function checkPwValid(password){
-		var valid = false;
-		if(password.length < 4){
-			valid = false;
-		} else if ((/\s/.test(password))){
-			console.log('PW test for space =' + (/\s/.test(password)));
-			valid = false;
-		} else if (password == '' || password.trim() == '' || password.trim().length == 0){
-			valid = false;
-		} else {
-			valid = true;
-		} return valid;
-	}
-*/	
+
 	// Sends a chat message
 	function sendMessage () {
 		var message = $inputMessage.val();
