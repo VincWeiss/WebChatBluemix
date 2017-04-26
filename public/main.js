@@ -72,7 +72,7 @@ $(function() {
 	function setUsername () {
 		var password = $passwordInput.val();
 		var pwValid = checkPwValid(password);
-		var reWhiteSpace = new RegExp("/^\s+$/");
+		var reWhiteSpace = new RegExp(" ");
 		username = cleanInput($usernameInput.val().trim());
 
 	    // Check for white space
