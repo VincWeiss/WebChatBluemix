@@ -2,7 +2,7 @@
 /** Server Side App **/
 
   var express = require('express');
-  var https = require('https');
+//  var https = require('https');
   var app = express();
   var server = require('http').createServer(app);
   var io = require('socket.io').listen(server);
@@ -39,19 +39,30 @@
   
   
 //  app.enable('trust proxy');
-  app.use(function (req, res, next) { 	
-	  console.log("USE Function");
-	  console.log("require secure == " + req.secure);
-	  if (req.secure) {             	
-		  next();
-	  } else {
-//		 res.redirect('https://chilloutsdb.mybluemix.net' + req.url);
-//		 res.redirect('chilloutsdb.mybluemix.net/favicon.ico');
-		 res.redirect('https://'  + req.headers.host + req.url);
-		 console.log("________---------______---------___________ " + 'https://' + req.headers.host + '__________' + req.url);
-		 console.log("redirected");
-		 // https://chilloutsdb.mybluemix.net/favicon.ico
-	  } 
+//  app.use(function (req, res, next) { 	
+//	  console.log("USE Function");
+//	  console.log("require secure == " + req.secure);
+//	  if (req.secure) {             	
+//		  next();
+//	  } else {
+////		 res.redirect('https://chilloutsdb.mybluemix.net' + req.url);
+////		 res.redirect('chilloutsdb.mybluemix.net/favicon.ico');
+//		 res.redirect('https://'  + req.headers.host + req.url);
+//		 console.log("________---------______---------___________ " + 'https://' + req.headers.host + '__________' + req.url);
+//		 console.log("redirected");
+//		 // https://chilloutsdb.mybluemix.net/favicon.ico
+//	  } 
+//  });
+  
+  app.use(function(req, res, next) {
+	    var schema = req.headers["x-forwarded-proto"];
+	    console.log("require secure == " + req.secure);
+	    if (schema === "https") {
+	   	  console.log("the if https");
+	      req.connection.encrypted = true;
+	    }
+
+	    next();
   });
   
   app.get('*', function (req, res){
