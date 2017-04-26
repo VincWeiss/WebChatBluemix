@@ -75,12 +75,21 @@ $(function() {
 	function setUsername () {
 		var password = $passwordInput.val();
 		var pwValid = checkPwValid(password);
+		var reWhiteSpace = new RegExp("/^\s+$/");
+		username = cleanInput($usernameInput.val().trim());
+
+	    // Check for white space
+	    if (reWhiteSpace.test(username)) {
+			if(!alert("Username mustn't contain spaces!")) {
+				$window.location.reload();
+			}
+	    }
 		if(!(pwValid)){
 			if(!alert("Password must at least contain four characters! \n It musn't contain spaces!")) {
 				$window.location.reload();
 			}		
 		} else {
-			username = cleanInput($usernameInput.val().trim());
+			
 			console.log('pw' + password);
 			socket.emit('register new user', { name:username, pw:password},function(callbackValue) {
 				console.log('Callback ' + callbackValue);

@@ -36,7 +36,6 @@
 			next();
 		} else {
 			res.redirect('https://' + req.headers.host);
-			// https://chilloutsdb.mybluemix.net/favicon.ico
 		} 
 	});
   server.listen(port, function () {
