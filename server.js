@@ -67,9 +67,11 @@
     		console.log(socket.nickname + ' called list');
     		var counter = 0;
     		var msg = '';
+    		console.log('user.length is ' + users.length);
         	for ( counter ; counter < users.length; counter++) {
                 if(counter === 0){ 
                 	msg += users[counter]; 
+                	console.log('User in List at index:' + counter + ' IS ' + users[counter]);
                 } else { 
                 	msg += ', ' + users[counter];
                 }
@@ -125,6 +127,7 @@
 				console.log("User is new");
 				  socket.nickname=usern;
 			      users[socket.nickname]=socket;
+			      console.log('users[socket.nickname] == ' + users[socket.nickname]);
 			      ++numUsers;
 			      addedUser = true;
 			      db.insert({ _id:usern, password:pass}, function(err, body) {

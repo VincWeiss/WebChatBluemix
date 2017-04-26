@@ -136,7 +136,7 @@ span.messageBody {
 
 .chat.page {
   display: none;
-  background-color: #337206;
+  background-color: #367C7F;
 }
 
 /* Font */
@@ -173,7 +173,7 @@ span.messageBody {
 }
 
 .messages {
-  background-color: #b2f27d;
+  background-color: #B9FCFF;
   height: 100%;
   margin: auto;
   overflow-y: scroll;
