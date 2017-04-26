@@ -118,9 +118,10 @@ io.on('connection', function (socket) {
 				console.log("User is new");
 				  socket.nickname=usern;
 			      users.push(socket.nickname);
-			      console.log('users[data.name] == ' + users[data.name]);
-			      console.log('socket.nickname ' + socket.nickname);
-			      usernames.push(data.name);
+			      console.log('users[index of socket] == ' + users.indexOf(socket.nickname));
+			      console.log('users[name of index of socket] == ' + users[users.indexOf(socket.nickname)]);
+			      console.log('usern' + usern);
+			      usernames.push(usern);
 			      ++numUsers;
 			      addedUser = true;
 			      db.insert({ _id:usern, password:pass}, function(err, body) {
@@ -142,9 +143,9 @@ io.on('connection', function (socket) {
 
 			      });
 			} else if( data.pw === dataGet.password){
-				socket.nickname=data.name;
+				socket.nickname=usern;
 			      users.push(socket.nickname);
-			      usernames.push(data.name);
+			      usernames.push(socket.nickname);
 			      ++numUsers;
 			      addedUser = true;
 			      db.insert({ _id:data.name, password:data.pw}, function(err, body) {
