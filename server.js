@@ -38,7 +38,7 @@
   });
   
   
-  app.enable('trust proxy');
+//  app.enable('trust proxy');
   app.use(function (req, res, next) { 	
 	  console.log("USE Function");
 	  console.log("require secure == " + req.secure);
@@ -53,14 +53,6 @@
 		 // https://chilloutsdb.mybluemix.net/favicon.ico
 	  } 
   });
-  
-//  function requireHTTPS(req, res, next) { 
-//	  if (req.headers && req.headers.$wssp === "80") { 
-//		  return res.redirect('https://' + req.get('host') + req.url); 
-//	  } 
-//	  next(); 
-//	  } 
-//  app.use(requireHTTPS);
   
   app.get('*', function (req, res){
 	  res.sendfile(__dirname + '/public/index.html');
