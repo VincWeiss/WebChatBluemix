@@ -41,17 +41,26 @@
   app.enable('trust proxy');
   app.use(function (req, res, next) { 	
 	  console.log("USE Function");
+	  console.log(req.secure);
 	  if (req.secure) {             	
 		  next();
 	  } else {
-		 console.log("_____________________________________ redirect else");
 //		 res.redirect('https://chilloutsdb.mybluemix.net' + req.url);
 //		 res.redirect('chilloutsdb.mybluemix.net/favicon.ico');
-		 res.redirect('https://'  + req.headers.host + req.url);
 		 console.log("________---------______---------___________ " + 'https://' + req.headers.host + '__________' + req.url);
+		 res.redirect('https://'  + req.headers.host + req.url);
+		 console.log("redirected");
 		 // https://chilloutsdb.mybluemix.net/favicon.ico
 	  } 
   });
+  
+//  function requireHTTPS(req, res, next) { 
+//	  if (req.headers && req.headers.$wssp === "80") { 
+//		  return res.redirect('https://' + req.get('host') + req.url); 
+//	  } 
+//	  next(); 
+//	  } 
+//  app.use(requireHTTPS);
   
   app.get('*', function (req, res){
 	  res.sendfile(__dirname + '/public/index.html');
