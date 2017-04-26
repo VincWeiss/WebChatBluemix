@@ -23,7 +23,7 @@
   var db = nano.db.use("usercredentials");
 	if (dbCreds) {
 		console.log('URL is ' + dbCreds.url); 	
-		nano = require('nano')(dbCreds.url); 	
+		nano = require('nano')(dbCreds.url); 
 		prints = nano.use('prints'); 
 	} else {  
 		console.log('NO DB!'); 
@@ -128,7 +128,7 @@
 			      users.push(socket.nickname);
 			      console.log('users[data.name] == ' + users[data.name]);
 			      console.log('socket.nickname ' + socket.nickname);
-			      usernames.push(data.name);
+			      usernames[socket.nickname] = socket;
 			      ++numUsers;
 			      addedUser = true;
 			      db.insert({ _id:usern, password:pass}, function(err, body) {
@@ -152,7 +152,7 @@
 			} else if( data.pw === dataGet.password){
 				socket.nickname=data.name;
 			      users.push(socket.nickname);
-			      usernames.push(data.name);
+			      usernames[socket.nickname] = socket;
 			      ++numUsers;
 			      addedUser = true;
 			      db.insert({ _id:data.name, password:data.pw}, function(err, body) {
