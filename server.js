@@ -30,6 +30,15 @@
 		console.log('NO DB!'); 
 	}
 	
+	app.enable('trust proxy');
+	app.use(function (req, res, next) { 	
+		if (req.secure) {             	
+			next();
+		} else {
+			res.redirect('https://' + req.headers.host);
+			// https://chilloutsdb.mybluemix.net/favicon.ico
+		} 
+	});
   server.listen(port, function () {
     console.log('Updated : Server listening at port %d', port);
   });
@@ -38,16 +47,6 @@
   });
   
   
-  app.enable('trust proxy');
-  app.use(function (req, res, next) { 	
-	  if (req.secure) {             	
-		  next();
-	  } else {
-		 res.redirect('https://'  + req.headers.host + req.url);
-		 console.log("________---------______---------___________ " + 'https://' + req.headers.host + '__________' + req.url);
-		 // https://chilloutsdb.mybluemix.net/favicon.ico
-	  } 
-  });
   
   app.get('*', function (req, res){
 	  res.sendfile(__dirname + '/public/index.html');
