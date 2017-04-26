@@ -44,11 +44,10 @@
 	  if (req.secure) {             	
 		  next();
 	  } else {
-		  //<link rel="icon" type="image/png" href="/chillout-favicon.png"/>
 		 console.log("_____________________________________ redirect else");
 //		 res.redirect('https://chilloutsdb.mybluemix.net' + req.url);
 //		 res.redirect('https://' + req.headers.host + req.url + '/favicon.ico');
-		 res.redirect('https://' + req.headers.host);
+		 res.redirect('chilloutsdb.mybluemix.net/favicon.ico');
 		 console.log("________---------______---------___________ " + 'https://' + req.headers.host + '__________' + req.url);
 		 console.log('__________' + req.url);
 		 // https://chilloutsdb.mybluemix.net/favicon.ico
