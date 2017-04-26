@@ -78,13 +78,15 @@ io.on('connection', function (socket) {
 				var messageArray = data.split(' ');
 				var user = messageArray[0];
 				var privateMessage = messageArray.splice(1).join(' ');
+				console.log("the private message " + privateMessage);
 				var name;
 				if (user.charAt(0) === '@') {
 					name = user.slice(1);
 				}
 				if (name in users){
-    			privateMessage = 'private: ' + privateMessage;
-    			socket.broadcast.to(users[name].id).emit(
+					privateMessage = 'private: ' + privateMessage;
+					console.log("user[name].id to broadcast " + users[name].id);
+					socket.broadcast.to(users[name].id).emit(
     					'new message',{
     						username: socket.nickname,
     						message: privateMessage,
