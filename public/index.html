@@ -12,7 +12,6 @@
    <script type="text/javascript">
 
     var keyword = "beach";
-
     $(document).ready(function(){
 
         $.getJSON("http://api.flickr.com/services/feeds/photos_public.gne?jsoncallback=?",
@@ -23,11 +22,9 @@
         },
         function(data) {
             var rnd = Math.floor(Math.random() * data.items.length);
-
             var image_src = data.items[rnd]['media']['m'].replace("_m", "_b");
 
             $('.login.page').css('background-image', "url('" + image_src + "')");
-
         });
 
     });
