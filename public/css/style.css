@@ -21,6 +21,7 @@ html, input {
 }
 
 html, body {
+  background-image: url("https://www.flickr.com/photos/133804014@N04/28925754802/in/dateposted-public/");
   height: 100%;
   margin: 0;
   padding: 0;
@@ -107,9 +108,6 @@ span.messageBody {
   padding-bottom: 10px;
   text-align: center;
   width: 400px;
-}
-
-.login.page .title, .pw {
 }
 
 .login.page .title, .pw {
