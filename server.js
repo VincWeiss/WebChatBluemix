@@ -1,8 +1,10 @@
+/** CloudComputing WebChat on IBM Bluemix **/
+/** Server Side App **/
 
   var express = require('express');
   var https = require('https');
   var app = express();
-  var server = require('http').createServer(app);
+  var server = require('https').createServer(app); // vorher 'http'
   var io = require('socket.io').listen(server);
   var port = process.env.PORT || 80;
   var users = [];
@@ -119,33 +121,8 @@
       console.log('I sent it');
     	
     });
-    /*
-    // when the client emits 'add user', this listens and executes
-    socket.on('add user', function (data) {
-      // store the username in the socket session for this client
-      // add the client's username to the global list
-      socket.nickname=data.name;
-      users[socket.nickname]=socket;
-      ++numUsers;
-      addedUser = true;
-      db.insert({ _id:data.name, password:data.pw}, function(err, body) {
-    	  console.log('Shoulda worked');
-    	  if (!err){
-    		  console.log('Error');
-    		  console.log(body);
-    	  } 				
-      });
-      socket.emit('login', {
-        numUsers: numUsers
-      });
-      // echo globally (all clients) that a person has connected
-      socket.broadcast.emit('user joined', {
-        username: socket.nickname,
-        numUsers: numUsers
-      });
-    });
-  */
-
+  
+  
     // Register a new User
     socket.on('register new user', function(data, callback){
     	console.log("REGISTER NEW USER CALLED");
@@ -177,19 +154,6 @@
 				      });
 
 			      });
-			      /*
-			      socket.emit('login', {
-			        numUsers: numUsers
-			      });*/
-			     /* // echo globally (all clients) that a person has connected
-			      socket.broadcast.emit('user joined', {
-			        username: socket.nickname,
-			        numUsers: numUsers
-			      });
-			} else if(data.name in users){
-				console.log('USER ALREADY SIGNED IN');
-				loginStatus = 2;
-				callback(loginStatus);*/
 			} else if( data.pw === dataGet.password){
 				socket.nickname=data.name;
 			      users[socket.nickname]=socket;
@@ -220,28 +184,6 @@
 			}
 			});			
     });	
-			/*		
-					db.insert({ _id: data.name, password: data.password  }, function(err, body) {
-					  if (!err){
-						  console.log(body);
-					  }
-					});
-					socket.nickname=data.name;
-				    //changed
-				      users[socket.nickname]=socket;
-				      //users.push(socket.nickname);
-				      ++numUsers;
-				      socket.emit('login', {
-				          numUsers: numUsers
-				        });
-					socket.broadcast.emit('user joined', {
-				        username: socket.nickname,
-				        numUsers: numUsers
-				      });
-				}
-		});
-    });
-    */
     
     // when the client emits 'typing', broadcast it to others
     socket.on('typing', function () {

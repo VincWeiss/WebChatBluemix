@@ -1,138 +1,156 @@
-$(function() { // change done
-  var FADE_TIME = 150; // ms
-  var TYPING_TIMER_LENGTH = 400; // ms
-  var COLORS = [
-	  
-    '#e21400', '#91580f', '#f8a700', '#f78b00', // NEW COLORS!!!
-    '#508900', '#366420', '#0da784', '#4ae8c4',
-    '#3b88eb', '#3824aa', '#a700ff', '#d300e7', 
-    '#ed72e8', '#ed72a4', '#780a36', '#846132', 
-    '#5a3121'
-  ];
+/** CloudComputing WebChat on IBM Bluemix **/
+/** Client Side App **/
 
-  // Initialize varibles
-  var $window = $(window);
-  var $usernameInput = $('.usernameInput'); // Input for username
-  var $passwordInput = $('.passwordInput'); // Input for password
-  var $messages = $('.messages'); // Messages area
-  var $inputMessage = $('.inputMessage'); // Input message input box
-  var $loginPage = $('.login.page'); // The login page
-  var $chatPage = $('.chat.page'); // The chatroom page
-
-  // Prompt for setting a username
-  var username;
-  var connected = false;
-  var typing = false;
-  var lastTypingTime;
-  
-  // This makes the focus on the username field. Without it we cant enter
+$(function() {
+	var FADE_TIME = 150; // ms
+	var TYPING_TIMER_LENGTH = 400; // ms
+	var COLORS = [ //nickname colors
+		'#e21400', '#91580f', '#f8a700', '#f78b00',
+		'#508900', '#366420', '#0da784', '#4ae8c4',
+		'#3b88eb', '#3824aa', '#a700ff', '#d300e7',
+		'#ed72e8', '#ed72a4', '#780a36', '#846132', 
+		'#5a3121'
+		];
+	
+	// Initialize varibles
+	var $window = $(window);
+	var $usernameInput = $('.usernameInput'); // Input for username
+	var $passwordInput = $('.passwordInput'); // Input for password
+	var $messages = $('.messages'); // Messages area
+	var $inputMessage = $('.inputMessage'); // Input message input box
+	var $loginPage = $('.login.page'); // The login page
+	var $chatPage = $('.chat.page'); // The chatroom page
+	
+	// Prompt for setting a username
+	var username;
+	var connected = false;
+	var typing = false;
+	var lastTypingTime;
+	
+	// This makes the focus on the username field. Without it we cant enter
 	// anything. See $window.keydown(function (event) for more info. Line 227
-  var $currentInput = $usernameInput.focus();
-
-  var socket = io();
-
-  function addParticipantsMessage (data) {
-    var message = '';
-    if (data.numUsers === 1) {
-      message += "there's 1 participant";
-    } else {
-      message += "there're " + data.numUsers + " participants";
-    }
-    log(message);
-  }
-  
-  function addPrivateMessage (data) {
-	    log(data.message);
-	  }
-  
-  function showUserlist (data) {
-	    log(data);
-	  }
-  
-  function cChange (data) {
-	  console.log('Client got it');
-	    log(data);
-	  }
-
-// Sets the client's username
-function setUsername () {
-	var password = $passwordInput.val();
-	username = cleanInput($usernameInput.val().trim());
-	console.log('pw' + password);
-	socket.emit('register new user', { name:username, pw:password},function(callbackValue){
-		console.log('Callback ' + callbackValue);
-		switch(callbackValue){
-		case 1:
-			$loginPage.fadeOut();
-			$chatPage.show();
-			$loginPage.off('click');
-			$currentInput = $inputMessage.focus();
-			log('Welcome ' + username);
-			// Tell the server your username
-			break;
-		case 2:
-			$loginPage.fadeOut();
-			$chatPage.show();
-			$loginPage.off('click');
-			$currentInput = $inputMessage.focus();
-			log('Welcome back ' + username);
-			// User already registered
-			break;
-		case 3:
-			//window.alert("Username already taken! Or Wrong Password!");
-			if(!alert('Username already taken! Or Wrong Password!')){window.location.reload();}
-			//$usernameInput.reset();
-			//$passwordInput.reset();
-			break;
+	var $currentInput = $usernameInput.focus();
+	
+	var socket = io();
+	
+	//This logs the current number of participants
+	function addParticipantsMessage (data) {
+		var message = '';
+		if (data.numUsers === 1) {
+			message += "there's 1 participant";
+			} else {
+				message += "there're " + data.numUsers + " participants";
+				}
+		log(message);
+	}
+	
+	function addPrivateMessage (data) {
+		log(data.message);
+	}
+	
+	function showUserlist (data) {
+		log(data);
+	}
+	
+	function cChange (data) {
+		console.log('Client got it');
+		log(data);
+	}
+	
+	// Sets the client's username
+	function setUsername () {
+		var password = $passwordInput.val();
+//		var pwValid = checkPwValid(password);
+//		if(!(pwValid)){
+//			if(!alert("Password must at least contain four characters! \n It musn't contain spaces!")){window.location.reload();}		
+//		} else {
+			username = cleanInput($usernameInput.val().trim());
+			console.log('pw' + password);
+			socket.emit('register new user', { name:username, pw:password},function(callbackValue){
+				console.log('Callback ' + callbackValue);
+				switch(callbackValue){
+				case 1:
+					$loginPage.fadeOut();
+					$chatPage.show();
+					$loginPage.off('click');
+					$currentInput = $inputMessage.focus();
+					log('Welcome ' + username);
+					// Tell the server your username
+				break;
+				case 2:
+					$loginPage.fadeOut();
+					$chatPage.show();
+					$loginPage.off('click');
+					$currentInput = $inputMessage.focus();
+					log('Welcome back ' + username);
+					// User already registered
+					break;
+				case 3:
+					if(!alert('Username already taken! Or Wrong Password!')){window.location.reload();}
+					break;
+				}
+			});
+//		}
+	}
+/*
+	function checkPwValid(password){
+		var valid = false;
+		if(password.length == 0 || password == '' || password.trim() == '' || password.trim().length == 0){
+			valid == false;
+		} else if (/\s/.test(password)){
+			valid == false;
+		} else if (password.length < 4){
+			valid == false;
+		} else {
+			valid == true;
+		} return valid;
+	}*/
+	
+	// Sends a chat message
+	function sendMessage () {
+		var message = $inputMessage.val();
+		// Prevent markup from being injected into the message
+		message = cleanInput(message);
+		// if there is a non-empty message and a socket connection
+		if (message && connected) {
+			$inputMessage.val('');
+			addChatMessage({
+				username: username,
+				message: message,
+				timestamp: Date.now()
+			});
+			// tell server to execute 'new message' and send along one parameter
+			socket.emit('new message', message);
 		}
-	});
-}
+	}
+	
+	// Log a message
+	function log (message, options) {
+		var $el = $('<li>').addClass('log').text(message);
+		addMessageElement($el, options);
+	}
 
-  // Sends a chat message
-  function sendMessage () {
-    var message = $inputMessage.val();
-    // Prevent markup from being injected into the message
-    message = cleanInput(message);
-    // if there is a non-empty message and a socket connection
-    if (message && connected) {
-      $inputMessage.val('');
-      addChatMessage({
-        username: username,
-        message: message,
-        timestamp: Date.now()
-      });
-      // tell server to execute 'new message' and send along one parameter
-      socket.emit('new message', message);
-    }
-  }
-
-  // Log a message
-  function log (message, options) {
-    var $el = $('<li>').addClass('log').text(message);
-    addMessageElement($el, options);
-  }
-
-  // Adds the visual chat message to the message list
-  function addChatMessage (data, options) {
-    // Don't fade the message in if there is an 'X was typing'
-    var $typingMessages = getTypingMessages(data);
-    options = options || {};
-    if ($typingMessages.length !== 0) {
-      options.fade = false;
-      $typingMessages.remove();
-    }
-    var $timestampDiv = $('<span class="timestamp" style = "font-size: 60%"/>')
-      .text(formatDate(data.timestamp));
-    // Change color if requested by server
-    if(data.message.includes('/color') || data.message.includes('/Color')){
-    	var $usernameDiv = $('<span class="username"/>')
-        .text(data.username)
-        .css('color', '#'+Math.floor(Math.random()*16777215).toString(16));
-    }else {
-    var $usernameDiv = $('<span class="username"/>')
-      .text(data.username + ':')
-      .css('color', getUsernameColor(data.username));
-    }
+	// Adds the visual chat message to the message list
+	function addChatMessage (data, options) {
+		// Don't fade the message in if there is an 'X was typing'
+		var $typingMessages = getTypingMessages(data);
+		options = options || {};
+		if ($typingMessages.length !== 0) {
+			options.fade = false;
+			$typingMessages.remove();
+		}
+		var $timestampDiv = $('<span class="timestamp" style = "font-size: 60%"/>')
+		.text(formatDate(data.timestamp));
+		// Change color if requested by server
+		if(data.message.includes('/color') || data.message.includes('/Color')){
+			var $usernameDiv = $('<span class="username"/>')
+			.text(data.username)
+			.css('color', '#'+Math.floor(Math.random()*16777215).toString(16));
+			} else {
+				var $usernameDiv = $('<span class="username"/>')
+				.text(data.username + ':')
+				.css('color', getUsernameColor(data.username));
+			}
     var $messageBodyDiv = $('<span class="messageBody" style = "height: 100%; margin: 0 auto">')
       .text(data.message);
 
