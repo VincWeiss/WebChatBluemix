@@ -120,7 +120,7 @@ span.messageBody {
 .login.page .passwordInput, .usernameInput {
 	font-size: 150%;
 	letter-spacing: 2px;
-	color: #b2f27d;
+	color: #eef4f4;
 	font-weight: bold;
 }
 
@@ -135,7 +135,7 @@ span.messageBody {
 
 .chat.page {
   display: none;
-  background-color: #367C7F;
+  background-color: #a59e90;
 }
 
 /* Font */
@@ -172,7 +172,7 @@ span.messageBody {
 }
 
 .messages {
-  background-color: #B9FCFF;
+  background-color: #eef4f4;
   height: 100%;
   margin: auto;
   overflow-y: scroll;
@@ -194,7 +194,7 @@ span.messageBody {
 /* Input */
 
 .inputMessage {
-  border: 10px solid #61c90c;
+  border: 10px solid #eef4f4;
   bottom: 0;
   height: 60px;
   outline: none;
