@@ -78,12 +78,12 @@ $(function() {
 	    // Check for white space
 	    if (reWhiteSpace.test(username)) {
 			if(!alert("Username mustn't contain spaces!")) {
-				$window.location.reload();
+				window.location.reload();
 			}
 	    }
 		if(!(pwValid)){
 			if(!alert("Password must at least contain four characters! \n It musn't contain spaces!")) {
-				$window.location.reload();
+				window.location.reload();
 			}		
 		} else {
 			
@@ -108,7 +108,9 @@ $(function() {
 					// User already registered
 					break;
 				case 3:
-					if(!alert('Username already taken! Or Wrong Password!')){window.location.reload();}
+					if(!alert('Username already taken! Or Wrong Password!')) {
+						window.location.reload();
+					}
 					break;
 				}
 			});
