@@ -1,31 +1,32 @@
 /** CloudComputing WebChat on IBM Bluemix **/
 /** Server Side App **/
 
-var express = require('express');
-var app = express();
-var server = require('http').createServer(app);
-var io = require('socket.io').listen(server);
-var port = process.env.PORT || 80;
-var users = {};
-var usernames = {};  
-var numUsers = 0;
-var userlist = '';
-var cfenv = require('cfenv');	
-var appEnv = cfenv.getAppEnv();
-var dbCreds =  appEnv.getServiceCreds('ChilloutsData');  
-var nano;
-var prints;
-var cloudant = {
-		url : "https://cd01382f-fb5a-4ba8-91eb-90711c0bf890-bluemix:e458604d6682e3144429086aed374ded2ae1944e91dfa08218a6a27155affab7@cd01382f-fb5a-4ba8-91eb-90711c0bf890-bluemix.cloudant.com"          	
-			};
-var nano = require("nano")(cloudant.url);
+  var express = require('express');
+  var app = express();
+  var server = require('http').createServer(app);
+  var io = require('socket.io').listen(server);
+  var port = process.env.PORT || 80;
+  var users = [];
+  var usernames = {};  
+  var numUsers = 0;
+  var userlist = '';
+  var cfenv = require('cfenv');	
+  var appEnv = cfenv.getAppEnv();
+  var dbCreds =  appEnv.getServiceCreds('ChilloutsData');  
+  var nano;
+  var prints;
+  var cloudant = {
+		  url : "https://cd01382f-fb5a-4ba8-91eb-90711c0bf890-bluemix:e458604d6682e3144429086aed374ded2ae1944e91dfa08218a6a27155affab7@cd01382f-fb5a-4ba8-91eb-90711c0bf890-bluemix.cloudant.com"          	
+  }; 
+  var nano = require("nano")(cloudant.url);
+
 var db = nano.db.use("usercredentials");
-if (dbCreds) {
-	console.log('URL is ' + dbCreds.url); 	
-	nano = require('nano')(dbCreds.url); 	
-	prints = nano.use('prints'); 
-} else {
-	console.log('NO DB!');
+	if (dbCreds) {
+		console.log('URL is ' + dbCreds.url); 	
+		nano = require('nano')(dbCreds.url); 	
+		prints = nano.use('prints'); 
+	} else {  
+		console.log('NO DB!'); 
 	}
 
 app.enable('trust proxy');
@@ -116,8 +117,10 @@ io.on('connection', function (socket) {
 			if (err){
 				console.log("User is new");
 				  socket.nickname=usern;
-			      users[socket.nickname]=socket;
-			      console.log('users[socket.nickname] == ' + users[socket.nickname]);
+			      users.push(socket.nickname);
+			      console.log('users[data.name] == ' + users[data.name]);
+			      console.log('socket.nickname ' + socket.nickname);
+			      usernames.push(data.name);
 			      ++numUsers;
 			      addedUser = true;
 			      db.insert({ _id:usern, password:pass}, function(err, body) {
@@ -140,7 +143,8 @@ io.on('connection', function (socket) {
 			      });
 			} else if( data.pw === dataGet.password){
 				socket.nickname=data.name;
-			      users[socket.nickname]=socket;
+			      users.push(socket.nickname);
+			      usernames.push(data.name);
 			      ++numUsers;
 			      addedUser = true;
 			      db.insert({ _id:data.name, password:data.pw}, function(err, body) {
