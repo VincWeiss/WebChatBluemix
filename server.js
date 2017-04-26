@@ -28,6 +28,10 @@ var db = nano.db.use("usercredentials");
 	} else {  
 		console.log('NO DB!'); 
 	}
+	
+var helmet = require('helmet');
+//Sets "X-XSS-Protection: 1; mode=block".
+app.use(helmet.xssFilter());
 
 app.enable('trust proxy');
 app.use(function (req, res, next) { 	
