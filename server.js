@@ -2,7 +2,7 @@
 /** Server Side App **/
 
   var express = require('express');
-  var http = require('http');
+  var https = require('https');
   var app = express();
   var server = require('http').createServer(app);
   var io = require('socket.io').listen(server);
@@ -46,11 +46,9 @@
 	  } else {
 		 console.log("_____________________________________ redirect else");
 //		 res.redirect('https://chilloutsdb.mybluemix.net' + req.url);
-//		 res.redirect('https://' + req.headers.host + req.url + '/favicon.ico');
 //		 res.redirect('chilloutsdb.mybluemix.net/favicon.ico');
-		 res.redirect('https://' + req.url);
+		 res.redirect('https://'  + req.headers.host + req.url);
 		 console.log("________---------______---------___________ " + 'https://' + req.headers.host + '__________' + req.url);
-		 console.log('__________' + req.url);
 		 // https://chilloutsdb.mybluemix.net/favicon.ico
 	  } 
   });
