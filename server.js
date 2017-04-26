@@ -52,6 +52,7 @@
 		 res.redirect('https://chilloutsdb.mybluemix.net' + req.url);
 //		 res.redirect('https://' + req.headers.host + req.url + '/favicon.ico');
 		 console.log("________---------______---------___________ " + 'https://' + req.headers.host + '__________' + req.url);
+		 console.log('__________' + req.url);
 		 // https://chilloutsdb.mybluemix.net/favicon.ico
 	  } 
   });
