@@ -41,14 +41,14 @@
   app.enable('trust proxy');
   app.use(function (req, res, next) { 	
 	  console.log("USE Function");
-	  console.log(req.secure);
+	  console.log("require secure == " + req.secure);
 	  if (req.secure) {             	
 		  next();
 	  } else {
 //		 res.redirect('https://chilloutsdb.mybluemix.net' + req.url);
 //		 res.redirect('chilloutsdb.mybluemix.net/favicon.ico');
-		 console.log("________---------______---------___________ " + 'https://' + req.headers.host + '__________' + req.url);
 		 res.redirect('https://'  + req.headers.host + req.url);
+		 console.log("________---------______---------___________ " + 'https://' + req.headers.host + '__________' + req.url);
 		 console.log("redirected");
 		 // https://chilloutsdb.mybluemix.net/favicon.ico
 	  } 
