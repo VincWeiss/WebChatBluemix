@@ -2,7 +2,6 @@
 /** Server Side App **/
 
   var express = require('express');
-//  var https = require('https');
   var app = express();
   var server = require('http').createServer(app);
   var io = require('socket.io').listen(server);
