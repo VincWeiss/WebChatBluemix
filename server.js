@@ -4,7 +4,7 @@
   var express = require('express');
   var https = require('https');
   var app = express();
-  var server = require('http').createServer(app);
+  var server = require('https').createServer(app); // vorher 'http'
   var io = require('socket.io').listen(server);
   var port = process.env.PORT || 80;
   var users = [];
