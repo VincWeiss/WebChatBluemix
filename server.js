@@ -20,7 +20,7 @@
   }; 
   var nano = require("nano")(cloudant.url);
 
-  var db = nano.db.use("usercredentials");
+var db = nano.db.use("usercredentials");
 	if (dbCreds) {
 		console.log('URL is ' + dbCreds.url); 	
 		nano = require('nano')(dbCreds.url); 	
@@ -28,93 +28,85 @@
 	} else {  
 		console.log('NO DB!'); 
 	}
-	
-	app.enable('trust proxy');
-	app.use(function (req, res, next) { 	
-		if (req.secure) {             	
-			next();
-		} else {
-			res.redirect('https://' + req.headers.host);
-		} 
-	});
-  server.listen(port, function () {
-    console.log('Updated : Server listening at port %d', port);
-  });
-  app.configure(function(){
-	  app.use(express.static(__dirname + '/public'));
-  });
-  
-  
-  
-  app.get('*', function (req, res){
-	  res.sendfile(__dirname + '/public/index.html');
-  });
-  // Routing
-  //app.use('/js',  express.static(__dirname + '/public/js'));
-  //app.use('/css', express.static(__dirname + '/public/css'));
-  
-  io.on('connection', function (socket) {
-    var addedUser = false;
-    
-    // when the client emits 'new message', this listens and executes
-    socket.on('new message', function (data) {
-    	if(data === ' '){
-    // Check for specific commands
-    	}else if(data === '/color' || data === '/Color'){
-    		data = 'changed color';
-    	}else if(data === '/list' || data === '/List'){
-    		console.log(socket.nickname + ' called list');
-    		var counter = 0;
-    		var msg = '';
-    		console.log('user.length is ' + users.length);
-        	for ( counter ; counter < users.length; counter++) {
-                if(counter === 0){ 
-                	msg += users[counter]; 
-                	console.log('User in List at index:' + counter + ' IS ' + users[counter]);
-                } else { 
-                	msg += ', ' + users[counter];
-                }
-            }
-        	console.log(msg);
-        	socket.emit('list', msg);
 
-    	}else if(data.indexOf('@') === 0){
-    		console.log('found /@');
-    		var messageArray = data.split(' ');
-    	    var user = messageArray[0];
-    	    var privateMessage = messageArray.splice(1).join(' ');
-    	    var name;
-    	    if (user.charAt(0) === '@') {
-    	    	name = user.slice(1);
-    	    }
-    	    //changed
-    		if (name in users){
+app.enable('trust proxy');
+app.use(function (req, res, next) { 	
+	if (req.secure) {
+		next();
+	} else {
+		res.redirect('https://' + req.headers.host);
+	}
+});
+
+server.listen(port, function () {
+	console.log('Updated : Server listening at port %d', port);
+	});
+
+app.configure(function(){
+	app.use(express.static(__dirname + '/public'));
+	});
+
+app.get('*', function (req, res){
+	res.sendfile(__dirname + '/public/index.html');
+	});
+
+io.on('connection', function (socket) {
+	var addedUser = false;
+	// when the client emits 'new message', this listens and executes
+	socket.on('new message', function (data) {
+		if(data === ' '){
+			// Check for specific commands
+		}else if(data === '/color' || data === '/Color'){
+			data = 'changed color';
+		}else if(data === '/list' || data === '/List'){
+			console.log(socket.nickname + ' called list');
+			var counter = 0;
+			var msg = '';
+			console.log('user.length is ' + users.length);
+			for ( counter ; counter < users.length; counter++) {
+				if(counter === 0){
+					msg += users[counter]; 
+					console.log('User in List at index:' + counter + ' IS ' + users[counter]);
+					} else { 
+						msg += ', ' + users[counter];
+					}
+				}
+			console.log(msg);
+			socket.emit('list', msg);
+			} else if(data.indexOf('@') === 0){
+				console.log('found /@');
+				var messageArray = data.split(' ');
+				var user = messageArray[0];
+				var privateMessage = messageArray.splice(1).join(' ');
+				var name;
+				if (user.charAt(0) === '@') {
+					name = user.slice(1);
+				}
+				if (name in users){
     			privateMessage = 'private: ' + privateMessage;
-    			//changed
     			socket.broadcast.to(users[name].id).emit(
-       					'new message',{
-    				username: socket.nickname,
-					message: privateMessage,
-    		        timestamp: Date.now(),
+    					'new message',{
+    						username: socket.nickname,
+    						message: privateMessage,
+    						timestamp: Date.now(),
     					}
-    			);
-    		}
-    	}else if(data.includes('/note') || data.includes('/Note')){
-    		var noteArray = data.split(' ');
-    	    var note = noteArray.splice(1).join(' ');
-        	 socket.emit('announce', note);    
-        	 } else{        		 
-      // Tell the client to execute 'new message'
-      socket.broadcast.emit('new message', {
-        username: socket.nickname,
-        message: data,
-        timestamp: Date.now()
-      });}
-      console.log('I sent it');
-    	
-    });
-  
-  
+    				);
+    			}
+			} else if(data.includes('/note') || data.includes('/Note')){
+				var noteArray = data.split(' ');
+				var note = noteArray.splice(1).join(' ');
+				socket.emit('announce', note);    
+				} else {
+					// Tell the client to execute 'new message'
+					socket.broadcast.emit('new message', {
+						username: socket.nickname,
+						message: data,
+						timestamp: Date.now()
+					});
+				}
+		console.log('I sent it');
+	});
+	
     // Register a new User
     socket.on('register new user', function(data, callback){
     	console.log("REGISTER NEW USER CALLED");
@@ -210,7 +202,5 @@
           numUsers: numUsers
         });
       }
-    });
-  });
-  
-  
+      });
+});
