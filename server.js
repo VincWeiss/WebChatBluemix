@@ -2,7 +2,7 @@
 /** Server Side App **/
 
   var express = require('express');
-  var https = require('https');
+  var http = require('http');
   var app = express();
   var server = require('http').createServer(app);
   var io = require('socket.io').listen(server);
@@ -41,16 +41,14 @@
   app.enable('trust proxy');
   app.use(function (req, res, next) { 	
 	  console.log("USE Function");
-	  if (req.secure) {             
-		  // request was via https, so do no special handling     	
-		  console.log("---------------------------------secure https");   
+	  if (req.secure) {             	
 		  next();
 	  } else {
-		 // request was via http, so redirect to https
 		  //<link rel="icon" type="image/png" href="/chillout-favicon.png"/>
 		 console.log("_____________________________________ redirect else");
-		 res.redirect('https://chilloutsdb.mybluemix.net' + req.url);
+//		 res.redirect('https://chilloutsdb.mybluemix.net' + req.url);
 //		 res.redirect('https://' + req.headers.host + req.url + '/favicon.ico');
+		 res.redirect('https://' + req.headers.host);
 		 console.log("________---------______---------___________ " + 'https://' + req.headers.host + '__________' + req.url);
 		 console.log('__________' + req.url);
 		 // https://chilloutsdb.mybluemix.net/favicon.ico
