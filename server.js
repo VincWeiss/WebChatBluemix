@@ -35,6 +35,7 @@ var db = nano.db.use("usercredentials");
 	}
 
 //Sets "X-XSS-Protection: 1; mode=block".
+	//hbcshxds
 var helmet = require('helmet');
 
 //implementation of our redis service
