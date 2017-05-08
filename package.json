@@ -14,9 +14,5 @@
 	    "socket.io": "*",
 	    "nconf": "^0.7.2",
 	    "redis": "*"
-  },
-  "repository": {
-		"type": "git",
-	    "url": "https://github.com/VincWeiss/WebChatBluemix"
   }
 }

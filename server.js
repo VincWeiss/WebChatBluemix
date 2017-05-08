@@ -116,6 +116,7 @@ app.get('*', function (req, res){
 	});
 
 var instanceId = !appEnv.isLocal ? appEnv.app.instance_id : undefined;
+console.log("----------------the app .get method and the instance id " + instanceId)
 app.get('/instanceId', function(req, res) {
 	console.log("----------------the app .get method and the instance id " + instanceId)
   if(!instanceId) {
