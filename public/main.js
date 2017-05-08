@@ -87,9 +87,7 @@ $(function() {
 			}		
 		} else {
 			
-			console.log('pw' + password);
 			socket.emit('register new user', { name:username, pw:password},function(callbackValue) {
-				console.log('Callback ' + callbackValue);
 				switch(callbackValue){
 				case 1:
 					$loginPage.fadeOut();
@@ -263,6 +261,13 @@ $(function() {
 		var index = Math.abs(hash % COLORS.length);
 		return COLORS[index];
 	}
+	
+	$.getJSON('/instanceId', function(response, statusText, jqXHR) {
+		  if(jqXHR.status === 200) {
+		    $('#instance-id').show();
+		    $('#instance-id-value').html(response.id);
+		  }
+		});
 	
 	// Keyboard events
 	$window.keydown(function (event) {
