@@ -86,8 +86,9 @@ $(function() {
 				window.location.reload();
 			}		
 		} else {
-			
+			cosole.log('password and username are valid');
 			socket.emit('register new user', { name:username, pw:password},function(callbackValue) {
+				console.log('callbackValue ' + callbackValue);
 				switch(callbackValue){
 				case 1:
 					cosole.log('the case 1 if the user was registered');
