@@ -40,7 +40,7 @@ var helmet = require('helmet');
 //implementation of our redis service
 var redisService = appEnv.getService('RedisChilloutsDB');
 var credentials;
-if(!redisService || redisService == null) {
+if(!redisService || redisService === null) {
   if(isDocker) {
     credentials = {"hostname":"redis", "port":port};
   } else {
@@ -48,7 +48,7 @@ if(!redisService || redisService == null) {
   }
 } else {
   if(isDocker) {
-    console.log('The app is running in a Docker container on Bluemix.')
+    console.log('The app is running in a Docker container on Bluemix.');
   }
   credentials = redisService.credentials;
 }
@@ -116,9 +116,9 @@ app.get('*', function (req, res){
 	});
 
 var instanceId = !appEnv.isLocal ? appEnv.app.instance_id : undefined;
-console.log("----------------the app .get method and the instance id " + instanceId)
+console.log("----------------the instance id " + instanceId);
 app.get('/instanceId', function(req, res) {
-	console.log("----------------the app .get method and the instance id " + instanceId)
+	console.log("----------------the app .get method " + instanceId);
   if(!instanceId) {
     res.writeHeader(204);
     res.end();
