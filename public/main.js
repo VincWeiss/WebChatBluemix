@@ -263,6 +263,7 @@ $(function() {
 	}
 	
 	$.getJSON('/instanceId', function(response, statusText, jqXHR) {
+		console.log("________________get the instance id" + response.id);
 		  if(jqXHR.status === 200) {
 		    $('#instance-id').show();
 		    $('#instance-id-value').html(response.id);
