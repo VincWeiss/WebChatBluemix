@@ -89,6 +89,8 @@ publisher.on('connect', function() {
 if (credentials.password !== '' && credentials.password !== undefined) {
     subscriber.auth(credentials.password);
     publisher.auth(credentials.password);
+  } else {
+	  console.log('password null or undefinded');
   }
 
 app.use(helmet.xssFilter());
@@ -111,7 +113,7 @@ app.configure(function(){
 	app.use(express.static(__dirname + '/public'));
 	});
 
-app.get('*', function (req, res){
+app.get('/', function (req, res){
 	res.sendfile(__dirname + '/public/index.html');
 	});
 
