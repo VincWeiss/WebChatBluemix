@@ -10,7 +10,7 @@
 	  	"nano": "^6.1.5",
 	  	"http-post": "^0.1.1",
 	  	"nconf": "^0.7.2",
-	    "express": "3.x",
+	  	"express": "3.4.8",
 	    "socket.io": "*",
 	    "nconf": "^0.7.2",
 	    "redis": "*"
