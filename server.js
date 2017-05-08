@@ -214,10 +214,12 @@ io.on('connection', function (socket) {
 					      });
 			    	  loginStatus = 1;
 			    	  callback(loginStatus);
+			    	  console.log('called callback after registration');
 				      socket.broadcast.emit('user joined', {
 				    	  username: socket.nickname,
 				    	  numUsers: numUsers
 				      });
+				      console.log('end of if to register the user');
 
 			      });
 			} else if( data.pw === dataGet.password){

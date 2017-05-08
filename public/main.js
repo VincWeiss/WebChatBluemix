@@ -90,6 +90,7 @@ $(function() {
 			socket.emit('register new user', { name:username, pw:password},function(callbackValue) {
 				switch(callbackValue){
 				case 1:
+					cosole.log('the case 1 if the user was registered');
 					$loginPage.fadeOut();
 					$chatPage.show();
 					$loginPage.off('click');
