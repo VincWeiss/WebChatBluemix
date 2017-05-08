@@ -117,17 +117,17 @@ app.get('*', function (req, res){
 
 var instanceId = !appEnv.isLocal ? appEnv.app.instance_id : undefined;
 console.log("----------------the instance id " + instanceId);
-app.get('/instanceId', function(req, res) {
-	console.log("----------------the app .get method " + instanceId);
-  if(!instanceId) {
-    res.writeHeader(204);
-    res.end();
-  } else {
-    res.end(JSON.stringify({
-      id : instanceId
-    }));
-  }
-});
+//app.get('/instanceId', function(req, res) {
+//	console.log("----------------the app .get method " + instanceId);
+//  if(!instanceId) {
+//    res.writeHeader(204);
+//    res.end();
+//  } else {
+//    res.end(JSON.stringify({
+//      id : instanceId
+//    }));
+//  }
+//});
 
 io.on('connection', function (socket) {
 	var addedUser = false;
