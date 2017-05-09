@@ -5,7 +5,7 @@
   var app = express();
   var server = require('http').createServer(app);
 // var io = require('socket.io').listen(server);
-  var io = require('socket.io').listen(server,{transports:['websocket']})
+  var io = require('socket.io').listen(server,{transports:['websocket']});
   var port = process.env.PORT || 80;
   var users = [];
   var usernames = {};  
@@ -36,6 +36,7 @@ var db = nano.db.use("usercredentials");
 var helmet = require('helmet');
 // Sets "X-XSS-Protection: 1; mode=block".
 app.use(helmet.xssFilter());
+app.use(express.json());
 
 app.enable('trust proxy');
 app.use(function (req, res, next) { 	
@@ -57,6 +58,7 @@ app.configure(function(){
 app.get('*', function (req, res){
 	res.sendfile(__dirname + '/public/index.html');
 	});
+
 /*
 var instanceId = !appEnv.isLocal ? appEnv.app.instance_id : undefined;
 
@@ -158,6 +160,7 @@ io.on('connection', function (socket) {
 			      redisdb.hset([socket.id, 'socketID', socket.id], redisdb.print);
 			      redisdb.hset([socket.id, 'username', usern], redisdb.print);
 			      //Redis end
+			      var instanceId = !appEnv.isLocal ? appEnv.app.instance_id : undefined;
 			      db.insert({ _id:usern, password:pass}, function(err, body) {
 			    	  console.log('User isnt registered yet');
 			    	  console.log('Inserted in DB is: ' + usern + " PW: " + pass);
@@ -170,7 +173,6 @@ io.on('connection', function (socket) {
 					      });
 			    	  loginStatus = 1;
 			    	  callback(loginStatus);
-			    	  var instanceId = !appEnv.isLocal ? appEnv.app.instance_id : undefined;
 				      socket.broadcast.emit('user joined', {
 				    	  username: socket.nickname,
 				    	  numUsers: numUsers,
