@@ -4,7 +4,8 @@
   var express = require('express');
   var app = express();
   var server = require('http').createServer(app);
-  var io = require('socket.io').listen(server);
+//  var io = require('socket.io').listen(server);
+  var io = require('socket.io').listen(server,{transports:['websocket']})
   var port = process.env.PORT || 80;
   var users = [];
   var usernames = {};  
@@ -19,6 +20,9 @@
 		  url : "https://cd01382f-fb5a-4ba8-91eb-90711c0bf890-bluemix:e458604d6682e3144429086aed374ded2ae1944e91dfa08218a6a27155affab7@cd01382f-fb5a-4ba8-91eb-90711c0bf890-bluemix.cloudant.com"          	
   }; 
   var nano = require("nano")(cloudant.url);
+  
+  var redis =require('socket.io-redis');
+  io.adapter(redis({ host:'pub-redis-16144.dal-05.1.sl.garantiadata.com', port:'16144', password:'sEl6ybtp7S4FqDvW'}));
 
 var db = nano.db.use("usercredentials");
 	if (dbCreds) {

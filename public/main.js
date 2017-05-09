@@ -31,7 +31,9 @@ $(function() {
 	// anything. See $window.keydown(function (event) for more info. Line 227
 	var $currentInput = $usernameInput.focus();
 	
-	var socket = io();
+//	var socket = io();
+	var socket = io({transports:['websocket']});
+	socket = io.connect();
 	
 	//This logs the current number of participants
 	function addParticipantsMessage (data) {
