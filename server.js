@@ -21,8 +21,8 @@
   }; 
   var nano = require("nano")(cloudant.url);
   
-  var redis =require('socket.io-redis');
-  io.adapter(redis({ host:'pub-redis-16144.dal-05.1.sl.garantiadata.com', port:'16144', password:'sEl6ybtp7S4FqDvW'}));
+  var redisdb =require('socket.io-redis');
+  io.adapter(redisdb({ host:'pub-redis-16144.dal-05.1.sl.garantiadata.com', port:'16144', password:'sEl6ybtp7S4FqDvW'}));
 
 var db = nano.db.use("usercredentials");
 	if (dbCreds) {
@@ -75,6 +75,10 @@ app.get('/instanceId', function(req, res) {
 */
 io.on('connection', function (socket) {
 	var addedUser = false;
+
+//	var redisClient = redis.createClient();
+//	  redisClient.subscribe('message');	
+	
 	// when the client emits 'new message', this listens and executes
 	socket.on('new message', function (data) {
 		if(data === ' '){
@@ -149,6 +153,11 @@ io.on('connection', function (socket) {
 			      usernames[socket.nickname] = socket;
 			      ++numUsers;
 			      addedUser = true;
+			      // Store user data in db
+			      redisdb.hset([socket.id, 'connectionDate', new Date()], redisdb.print);
+			      redisdb.hset([socket.id, 'socketID', socket.id], redisdb.print);
+			      redisdb.hset([socket.id, 'username', usern], redisdb.print);
+			      //Redis end
 			      db.insert({ _id:usern, password:pass}, function(err, body) {
 			    	  console.log('User isnt registered yet');
 			    	  console.log('Inserted in DB is: ' + usern + " PW: " + pass);
