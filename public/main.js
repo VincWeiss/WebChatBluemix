@@ -266,13 +266,6 @@ $(function() {
 		return COLORS[index];
 	}
 	
-	$.getJSON('/instanceId', function(response, statusText, jqXHR) {
-		console.log("________________get the instance id" + response.id);
-		  if(jqXHR.status === 200) {
-		    $('#instance-id').show();
-		    $('#instance-id-value').html(response.id);
-		  }
-		});
 	
 	// Keyboard events
 	$window.keydown(function (event) {
@@ -337,6 +330,7 @@ $(function() {
 	socket.on('user joined', function (data) {
 		console.log("socket.on user joined");
 		log(data.username + ' joined');
+		log(data.instanceId + ' instanceID');
 		addParticipantsMessage(data);
 	});
 
