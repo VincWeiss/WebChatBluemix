@@ -57,8 +57,9 @@ app.configure(function(){
 app.get('*', function (req, res){
 	res.sendfile(__dirname + '/public/index.html');
 	});
-
+/*
 var instanceId = !appEnv.isLocal ? appEnv.app.instance_id : undefined;
+
 console.log("----------------the instance id " + instanceId);
 app.get('/instanceId', function(req, res) {
 	console.log("----------------the app .get method " + instanceId);
@@ -71,7 +72,7 @@ app.get('/instanceId', function(req, res) {
     }));
   }
 });
-
+*/
 io.on('connection', function (socket) {
 	var addedUser = false;
 	// when the client emits 'new message', this listens and executes
@@ -160,9 +161,11 @@ io.on('connection', function (socket) {
 					      });
 			    	  loginStatus = 1;
 			    	  callback(loginStatus);
+			    	  var instanceId = !appEnv.isLocal ? appEnv.app.instance_id : undefined;
 				      socket.broadcast.emit('user joined', {
 				    	  username: socket.nickname,
-				    	  numUsers: numUsers
+				    	  numUsers: numUsers,
+				    	  instanceId:instanceId
 				      });
 
 			      });
