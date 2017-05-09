@@ -1,10 +1,10 @@
 /** CloudComputing WebChat on IBM Bluemix **/
-/** Server Side App **/
+/** Server Side App * */
 
   var express = require('express');
   var app = express();
   var server = require('http').createServer(app);
-//  var io = require('socket.io').listen(server);
+// var io = require('socket.io').listen(server);
   var io = require('socket.io').listen(server,{transports:['websocket']})
   var port = process.env.PORT || 80;
   var users = [];
@@ -34,7 +34,7 @@ var db = nano.db.use("usercredentials");
 	}
 	
 var helmet = require('helmet');
-//Sets "X-XSS-Protection: 1; mode=block".
+// Sets "X-XSS-Protection: 1; mode=block".
 app.use(helmet.xssFilter());
 
 app.enable('trust proxy');
@@ -57,6 +57,20 @@ app.configure(function(){
 app.get('*', function (req, res){
 	res.sendfile(__dirname + '/public/index.html');
 	});
+
+var instanceId = !appEnv.isLocal ? appEnv.app.instance_id : undefined;
+console.log("----------------the instance id " + instanceId);
+app.get('/instanceId', function(req, res) {
+	console.log("----------------the app .get method " + instanceId);
+  if(!instanceId) {
+    res.writeHeader(204);
+    res.end();
+  } else {
+    res.end(JSON.stringify({
+      id : instanceId
+    }));
+  }
+});
 
 io.on('connection', function (socket) {
 	var addedUser = false;
@@ -175,11 +189,11 @@ io.on('connection', function (socket) {
 			    	  username: socket.nickname,
 			    	  numUsers: numUsers
 			      });
-					//callback(true);
+					// callback(true);
 			}else {
 				loginStatus = 3;
 				callback(loginStatus);
-				//callback(false);
+				// callback(false);
 			}
 			});			
     });	
@@ -203,7 +217,7 @@ io.on('connection', function (socket) {
       // remove the username from global usernames list
       if (addedUser) {
     	users.splice(users.indexOf(socket.nickname),1);
-    	//changed
+    	// changed
         delete users[socket.nickname];
         delete usernames[socket.nickname];
         --numUsers;

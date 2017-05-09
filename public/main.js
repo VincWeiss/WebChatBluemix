@@ -266,6 +266,14 @@ $(function() {
 		return COLORS[index];
 	}
 	
+	$.getJSON('/instanceId', function(response, statusText, jqXHR) {
+		console.log("________________get the instance id" + response.id);
+		  if(jqXHR.status === 200) {
+		    $('#instance-id').show();
+		    $('#instance-id-value').html(response.id);
+		  }
+		});
+	
 	// Keyboard events
 	$window.keydown(function (event) {
 		// Auto-focus the current input when a key is typed
