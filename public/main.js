@@ -14,7 +14,7 @@ $(function() {
 	
 	// Initialize varibles
 	var $window = $(window);
-	var $instanceID = $('.instance-id-value'); // instance-id of socket
+//	var $instanceID = $('.instance-id-value'); // instance-id of socket
 	var $usernameInput = $('.usernameInput'); // Input for username
 	var $passwordInput = $('.passwordInput'); // Input for password
 	var $messages = $('.messages'); // Messages area
@@ -37,14 +37,14 @@ $(function() {
 	socket = io.connect();
 	
 //	instanceID.textContent="newtext";
-	
+/*	
 	$.getJSON('/instanceId', function(response, statusText, jqXHR) {
 		  if(jqXHR.status == 200) {
 		    $('#instance-id').show();
 		    $('#instance-id-value').html(response.id);
 		  }
 		});
-	
+*/
 	//This logs the current number of participants
 	function addParticipantsMessage (data) {
 		var message = '';

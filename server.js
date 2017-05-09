@@ -36,6 +36,7 @@ var db = nano.db.use("usercredentials");
 var helmet = require('helmet');
 // Sets "X-XSS-Protection: 1; mode=block".
 app.use(helmet.xssFilter());
+app.use(express.json());
 
 app.enable('trust proxy');
 app.use(function (req, res, next) { 	
@@ -58,9 +59,7 @@ app.get('*', function (req, res){
 	res.sendfile(__dirname + '/public/index.html');
 	});
 
-//var instanceId = !appEnv.isLocal ? appEnv.app.instance_id : undefined;
-
-
+/*
 var instanceId = !appEnv.isLocal ? appEnv.app.instance_id : undefined;
 
 console.log("----------------the instance id " + instanceId);
@@ -75,7 +74,7 @@ app.get('/instanceId', function(req, res) {
     }));
   }
 });
-
+*/
 io.on('connection', function (socket) {
 	var addedUser = false;
 	// when the client emits 'new message', this listens and executes
@@ -152,6 +151,7 @@ io.on('connection', function (socket) {
 			      usernames[socket.nickname] = socket;
 			      ++numUsers;
 			      addedUser = true;
+			      var instanceId = !appEnv.isLocal ? appEnv.app.instance_id : undefined;
 			      db.insert({ _id:usern, password:pass}, function(err, body) {
 			    	  console.log('User isnt registered yet');
 			    	  console.log('Inserted in DB is: ' + usern + " PW: " + pass);
@@ -167,7 +167,7 @@ io.on('connection', function (socket) {
 				      socket.broadcast.emit('user joined', {
 				    	  username: socket.nickname,
 				    	  numUsers: numUsers,
-//				    	  instanceId:instanceId
+				    	  instanceId:instanceId
 				      });
 
 			      });
