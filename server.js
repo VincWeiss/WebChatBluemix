@@ -5,7 +5,7 @@
   var app = express();
   var server = require('http').createServer(app);
 // var io = require('socket.io').listen(server);
-  var io = require('socket.io').listen(server,{transports:['websocket']})
+  var io = require('socket.io').listen(server,{transports:['websocket']});
   var port = process.env.PORT || 80;
   var users = [];
   var usernames = {};  
