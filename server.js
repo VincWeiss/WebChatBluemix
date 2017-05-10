@@ -62,43 +62,43 @@ if(!redisService || redisService === null) {
 }
 
 // We need 2 Redis clients one to listen for events, one to publish events
-//var subscriber = redis.createClient(credentials.port, credentials.hostname);
-//subscriber.on('error', function(err) {
-//  if (err.message.match('getaddrinfo EAI_AGAIN')) {
-//    console.log('Waiting for IBM Containers networking to be available...');
-//    return;
-//  }
-//  console.error('There was an error with the subscriber redis client ' + err);
-//});
-//subscriber.on('connect', function() {
-//  console.log('The subscriber redis client has connected!');
-//
-//  subscriber.on('message', function(channel, msg) {
-//    if(channel === 'chatter') {
-//      while(users.length > 0) {
-//        var client = users.pop();
-//        client.end(msg);
-//      }
-//    }
-//  });
-//  subscriber.subscribe('chatter');
-//});
-//var publisher = redis.createClient(credentials.port, credentials.hostname);
-//publisher.on('error', function(err) {
-//  if (err.message.match('getaddrinfo EAI_AGAIN')) {
-//    console.log('Waiting for IBM Containers networking to be available...');
-//    return;
-//  }
-//  console.error('There was an error with the publisher redis client ' + err);
-//});
-//publisher.on('connect', function() {
-//  console.log('The publisher redis client has connected!');
-//});
-//
-//if (credentials.password !== '' && credentials.password !== undefined) {
-//    subscriber.auth(credentials.password);
-//    publisher.auth(credentials.password);
-//  }
+var subscriber = redis.createClient(credentials.port, credentials.hostname);
+subscriber.on('error', function(err) {
+  if (err.message.match('getaddrinfo EAI_AGAIN')) {
+    console.log('Waiting for IBM Containers networking to be available...');
+    return;
+  }
+  console.error('There was an error with the subscriber redis client ' + err);
+});
+subscriber.on('connect', function() {
+  console.log('The subscriber redis client has connected!');
+
+  subscriber.on('message', function(channel, msg) {
+    if(channel === 'chatter') {
+      while(users.length > 0) {
+        var client = users.pop();
+        client.end(msg);
+      }
+    }
+  });
+  subscriber.subscribe('chatter');
+});
+var publisher = redis.createClient(credentials.port, credentials.hostname);
+publisher.on('error', function(err) {
+  if (err.message.match('getaddrinfo EAI_AGAIN')) {
+    console.log('Waiting for IBM Containers networking to be available...');
+    return;
+  }
+  console.error('There was an error with the publisher redis client ' + err);
+});
+publisher.on('connect', function() {
+  console.log('The publisher redis client has connected!');
+});
+
+if (credentials.password !== '' && credentials.password !== undefined) {
+    subscriber.auth(credentials.password);
+    publisher.auth(credentials.password);
+  }
 
 server.listen(port, function() {
 	console.log('Updated : Server listening at port %d', port);
