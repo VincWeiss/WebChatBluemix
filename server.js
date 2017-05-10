@@ -5,10 +5,10 @@
 var express = require('express');
 var app = express();
 var server = require('http').createServer(app);
+// var io = require('socket.io').listen(server);
 var io = require('socket.io').listen(server, {
 	transports : [ 'websocket' ]
-});// var io = require('socket.io').listen(server);
-var redis = require('socket.io-redis');
+});
 var port = process.env.PORT || 80;
 var users = [];
 var usernames = {};
@@ -22,8 +22,15 @@ var prints;
 var cloudant = {
 	url : "https://cd01382f-fb5a-4ba8-91eb-90711c0bf890-bluemix:e458604d6682e3144429086aed374ded2ae1944e91dfa08218a6a27155affab7@cd01382f-fb5a-4ba8-91eb-90711c0bf890-bluemix.cloudant.com"
 };
-
 var nano = require("nano")(cloudant.url);
+
+var redisdb = require('socket.io-redis');
+io.adapter(redisdb({
+	host : 'pub-redis-16144.dal-05.1.sl.garantiadata.com',
+	port : '16144',
+	password : 'sEl6ybtp7S4FqDvW'
+}));
+
 var db = nano.db.use("usercredentials");
 if (dbCreds) {
 	console.log('URL is ' + dbCreds.url);
@@ -47,12 +54,6 @@ app.use(function(req, res, next) {
 	}
 });
 
-io.adapter(redis({
-	host : 'pub-redis-16144.dal-05.1.sl.garantiadata.com',
-	port : '16144',
-	password : 'sEl6ybtp7S4FqDvW'
-}));
-
 server.listen(port, function() {
 	console.log('Updated : Server listening at port %d', port);
 });
@@ -65,8 +66,28 @@ app.get('*', function(req, res) {
 	res.sendfile(__dirname + '/public/index.html');
 });
 
+/*
+ var instanceId = !appEnv.isLocal ? appEnv.app.instance_id : undefined;
+
+ console.log("----------------the instance id " + instanceId);
+ app.get('/instanceId', function(req, res) {
+ console.log("----------------the app .get method " + instanceId);
+ if(!instanceId) {
+ res.writeHeader(204);
+ res.end();
+ } else {
+ res.end(JSON.stringify({
+ id : instanceId
+ }));
+ }
+ });
+ */
 io.on('connection', function(socket) {
 	var addedUser = false;
+
+	//	var redisClient = redis.createClient();
+	//	  redisClient.subscribe('message');	
+
 	// when the client emits 'new message', this listens and executes
 	socket.on('new message',
 			function(data) {
@@ -126,7 +147,7 @@ io.on('connection', function(socket) {
 				}
 				console.log('I sent it');
 			});
-	
+
 	// Register a new User
 	socket.on('register new user', function(data, callback) {
 		console.log("REGISTER NEW USER CALLED");
@@ -135,8 +156,6 @@ io.on('connection', function(socket) {
 		var loginStatus;
 		db.get(usern, function(err, dataGet) {
 			if (err) {
-				var instanceId = !appEnv.isLocal ? appEnv.app.instance_id : undefined;
-				console.log("1_____________the instance id " + instanceId);
 				console.log("User is new");
 				socket.nickname = usern;
 				users.push(socket.nickname);
@@ -145,13 +164,24 @@ io.on('connection', function(socket) {
 				usernames[socket.nickname] = socket;
 				++numUsers;
 				addedUser = true;
+				// Store user data in db
+				redisdb.hset([ socket.id, 'connectionDate', new Date() ],
+						redisdb.print);
+				redisdb.hset([ socket.id, 'socketID', socket.id ],
+						redisdb.print);
+				redisdb.hset([ socket.id, 'username', usern ], redisdb.print);
+
+				//Redis end
+				var instanceId = !appEnv.isLocal ? appEnv.app.instance_id
+						: undefined;
 				db.insert({
 					_id : usern,
 					password : pass
 				},
 						function(err, body) {
 							console.log('User isnt registered yet');
-							console.log('Inserted in DB is: '+ usern + 'PW: ' + pass);
+							console.log('Inserted in DB is: ' + usern + " PW: "
+									+ pass);
 							if (!err) {
 								console.log('User is now registered');
 								console.log(body);
