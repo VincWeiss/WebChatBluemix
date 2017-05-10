@@ -29,11 +29,18 @@ $(function() {
 	// anything. See $window.keydown(function (event) for more info. Line 227
 	var $currentInput = $usernameInput.focus();
 
+	// var socket = io();
 	var socket = io({
 		transports : [ 'websocket' ]
 	});
 	socket = io.connect();
 
+	// instanceID.textContent="newtext";
+	/*
+	 * $.getJSON('/instanceId', function(response, statusText, jqXHR) {
+	 * if(jqXHR.status == 200) { $('#instance-id').show();
+	 * $('#instance-id-value').html(response.id); } });
+	 */
 	// This logs the current number of participants
 	function addParticipantsMessage(data) {
 		var message = '';
@@ -89,15 +96,15 @@ $(function() {
 				window.location.reload();
 			}
 		} else {
-
-			console.log('pw' + password);
+			cosole.log('password and username are valid');
 			socket.emit('register new user', {
 				name : username,
 				pw : password
 			}, function(callbackValue) {
-				console.log('Callback ' + callbackValue);
+				console.log('callbackValue ' + callbackValue);
 				switch (callbackValue) {
 				case 1:
+					cosole.log('the case 1 if the user was registered');
 					$loginPage.fadeOut();
 					$chatPage.show();
 					$loginPage.off('click');
@@ -273,6 +280,14 @@ $(function() {
 		var index = Math.abs(hash % COLORS.length);
 		return COLORS[index];
 	}
+
+	$.getJSON('/instanceId', function(response, statusText, jqXHR) {
+		console.log("________________get the instance id" + response.id);
+		if (jqXHR.status === 200) {
+			$('#instance-id').show();
+			$('#instance-id-value').html(response.id);
+		}
+	});
 
 	// Keyboard events
 	$window.keydown(function(event) {
