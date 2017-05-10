@@ -8,7 +8,7 @@ var server = require('http').createServer(app);
 var io = require('socket.io').listen(server, {
 	transports : [ 'websocket' ]
 });// var io = require('socket.io').listen(server);
-var redis = require('redis');
+var redis = require('socket.io-redis');
 var nconf = require('nconf');
 var port = process.env.PORT || 80;
 var users = [];
@@ -25,15 +25,6 @@ var cloudant = {
 };
 nconf.env();
 var nano = require("nano")(cloudant.url);
-//var isDocker = nconf.get('DOCKER') === 'true' ? true : false;
-
-var redis = require('socket.io-redis');
-io.adapter(redis({
-	host : 'pub-redis-16144.dal-05.1.sl.garantiadata.com',
-	port : '16144',
-	password : 'sEl6ybtp7S4FqDvW'
-}));
-
 var db = nano.db.use("usercredentials");
 if (dbCreds) {
 	console.log('URL is ' + dbCreds.url);
@@ -56,6 +47,12 @@ app.use(function(req, res, next) {
 		res.redirect('https://' + req.headers.host);
 	}
 });
+
+io.adapter(redis({
+	host : 'pub-redis-16144.dal-05.1.sl.garantiadata.com',
+	port : '16144',
+	password : 'sEl6ybtp7S4FqDvW'
+}));
 
 var redisService = appEnv.getService('RedisChilloutsDB');
 var credentials;
