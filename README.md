@@ -1,7 +1,6 @@
-
-
 # Chillouts
 ## Usage use the Chat to communicate with your friends
+<<<<<<< HEAD
 So that we all can work together follow the steps below:
 
 fork this reposototy to your own account and switch to the forked one
@@ -12,6 +11,20 @@ now in your new "own" forked reposotory click on the green "clone or download" b
 4. git remote add orinin https://github.com/YOURREPOSOTORYNAMEHERE/Spotidoodle.git
 5. git remote add SOMENAMEOFAREPOHERE https://github.com/OxanaDoroshkevich/Spotidoodle.git
 6. check your reposotory status with: git remote -v
+=======
+Getting Started
+
+So that we all can work together follow the steps below:
+
+1. fork this reposototy to your own account and switch to the forked one
+2. now in your new "own" forked reposotory click on the green "clone or download" button and download the zip file
+3. open git bash
+4. in git bash: switch to the directory you have chosen for the downloaded and hopefully now unzipped project file
+5. in git bash: git init
+6. git remote add orinin https://github.com/YOURREPOSOTORYNAMEHERE/Spotidoodle.git
+7. git remote add SOMENAMEOFAREPOHERE https://github.com/OxanaDoroshkevich/Spotidoodle.git
+8. check your reposotory status with: git remote -v
+>>>>>>> 27f030ccf83fdf367a2c3cdcfdb004dbc71f023c
 this should allow you now to push to your own master and pull from the master master ;)
 
 if you want to commit some changes, follow the following instruction:
@@ -24,12 +37,17 @@ I would recommend to do the pull requests to merge the local code to the master 
 
 Good to know. If you have some problems with git and you can't pull or push or even checkout the master again or something and you're just fucking stuck...
 
+<<<<<<< HEAD
 git fetch --all
+=======
+>>>>>>> 27f030ccf83fdf367a2c3cdcfdb004dbc71f023c
 git reset --hard origin/master
 
 to get the version of your accounts master branch status.
 
+Prerequisites
 
+What things you need to install the software and how to install them
 
 ## Developing, Selina Magnin, Vincent Weiss, Oxana Doroshkevich
 
