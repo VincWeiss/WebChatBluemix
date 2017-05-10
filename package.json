@@ -13,18 +13,5 @@
     "express": "3.4.8",
     "socket.io": "*",
     "redis": "*"
-  },
-  "description": "<<<<<<< HEAD\r So that we all can work together follow the steps below:",
-  "main": "server.js",
-  "devDependencies": {},
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/OxanaDoroshkevich/WebChatBluemix.git"
-  },
-  "author": "oxana dorohskevich",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/OxanaDoroshkevich/WebChatBluemix/issues"
-  },
-  "homepage": "https://github.com/OxanaDoroshkevich/WebChatBluemix#readme"
+  }
 }
