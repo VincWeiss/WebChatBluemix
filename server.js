@@ -6,6 +6,8 @@
   var server = require('http').createServer(app);
 // var io = require('socket.io').listen(server);
   var io = require('socket.io').listen(server,{transports:['websocket']});
+  var redis = require('redis');
+  var nconf = require('nconf');
   var port = process.env.PORT || 80;
   var users = [];
   var usernames = {};  
@@ -37,6 +39,68 @@ var helmet = require('helmet');
 // Sets "X-XSS-Protection: 1; mode=block".
 app.use(helmet.xssFilter());
 app.use(express.json());
+
+nconf.env();
+var isDocker = nconf.get('DOCKER') == 'true' ? true : false;
+var clients = [];
+
+var app = express();
+app.set('port', appEnv.port || 3000);
+app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.json());
+
+var redisService = appEnv.getService('redis-chatter');
+var credentials;
+if(!redisService || redisService == null) {
+  if(isDocker) {
+    credentials = {"hostname":"redis", "port":6379};
+  } else {
+    credentials = {"hostname":"127.0.0.1", "port":6379};
+  }
+} else {
+  if(isDocker) {
+    console.log('The app is running in a Docker container on Bluemix.')
+  }
+  credentials = redisService.credentials;
+}
+
+var subscriber = redis.createClient(credentials.port, credentials.hostname);
+subscriber.on('error', function(err) {
+  if (isDocker && err.message.match('getaddrinfo EAI_AGAIN')) {
+    console.log('Waiting for IBM Containers networking to be available...')
+    return
+  }
+  console.error('There was an error with the subscriber redis client ' + err);
+});
+subscriber.on('connect', function() {
+  console.log('The subscriber redis client has connected!');
+
+  subscriber.on('message', function(channel, msg) {
+    if(channel === 'chatter') {
+      while(clients.length > 0) {
+        var client = clients.pop();
+        client.end(msg);
+      }
+    }
+  });
+  subscriber.subscribe('chatter');
+});
+var publisher = redis.createClient(credentials.port, credentials.hostname);
+publisher.on('error', function(err) {
+  if (isDocker && err.message.match('getaddrinfo EAI_AGAIN')) {
+    console.log('Waiting for IBM Containers networking to be available...')
+    return
+  }
+  console.error('There was an error with the publisher redis client ' + err);
+});
+publisher.on('connect', function() {
+  console.log('The publisher redis client has connected!');
+});
+
+if (credentials.password != '' && credentials.password != undefined) {
+    subscriber.auth(credentials.password);
+    publisher.auth(credentials.password);
+  }
 
 app.enable('trust proxy');
 app.use(function (req, res, next) { 	
