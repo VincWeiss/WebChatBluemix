@@ -2,19 +2,19 @@
 /** Server Side App * */
 
 var express = require('express');
+var fs = require('fs');
 var app = express();
 var server = require('http').createServer(app);
-// var io = require('socket.io').listen(server);
-var io = require('socket.io').listen(server, {
-	transports : [ 'websocket' ]
-});
+var io = require('socket.io').listen(server);
+var cfenv = require('cfenv');
+var redis = require('redis');
+var nconf = require('nconf');
+var appEnv = cfenv.getAppEnv();
 var port = process.env.PORT || 80;
 var users = [];
 var usernames = {};
 var numUsers = 0;
 var userlist = '';
-var cfenv = require('cfenv');
-var appEnv = cfenv.getAppEnv();
 var dbCreds = appEnv.getServiceCreds('ChilloutsData');
 var nano;
 var prints;
@@ -22,13 +22,8 @@ var cloudant = {
 	url : "https://cd01382f-fb5a-4ba8-91eb-90711c0bf890-bluemix:e458604d6682e3144429086aed374ded2ae1944e91dfa08218a6a27155affab7@cd01382f-fb5a-4ba8-91eb-90711c0bf890-bluemix.cloudant.com"
 };
 var nano = require("nano")(cloudant.url);
-
-var redisdb = require('socket.io-redis');
-io.adapter(redisdb({
-	host : 'pub-redis-16144.dal-05.1.sl.garantiadata.com',
-	port : '16144',
-	password : 'sEl6ybtp7S4FqDvW'
-}));
+nconf.env();
+var isDocker = nconf.get('DOCKER') === 'true' ? true : false;
 
 var db = nano.db.use("usercredentials");
 if (dbCreds) {
@@ -39,8 +34,81 @@ if (dbCreds) {
 	console.log('NO DB!');
 }
 
+//Sets "X-XSS-Protection: 1; mode=block".
 var helmet = require('helmet');
-// Sets "X-XSS-Protection: 1; mode=block".
+
+//implementation of our redis service
+var redisService = appEnv.getService('RedisChilloutsDB');
+var credentials;
+if (!redisService || redisService === null) {
+	if (isDocker) {
+		credentials = {
+			"hostname" : "redis",
+			"port" : port
+		};
+	} else {
+		credentials = {
+			"hostname" : "127.0.0.1",
+			"port" : port
+		};
+	}
+} else {
+	if (isDocker) {
+		console.log('The app is running in a Docker container on Bluemix.');
+	}
+	credentials = redisService.credentials;
+}
+
+var subscriber = redis.createClient(credentials.port, credentials.hostname);
+subscriber
+		.on(
+				'error',
+				function(err) {
+					if (isDocker && err.message.match('getaddrinfo EAI_AGAIN')) {
+						console
+								.log('Waiting for IBM Containers networking to be available...');
+						return;
+					}
+					console
+							.error('There was an error with the subscriber redis client '
+									+ err);
+				});
+subscriber.on('connect', function() {
+	console.log('The subscriber redis client has connected!');
+
+	subscriber.on('message', function(channel, msg) {
+		if (channel === 'chatter') {
+			while (users.length > 0) {
+				var client = users.pop();
+				client.end(msg);
+			}
+		}
+	});
+	subscriber.subscribe('chatter');
+});
+var publisher = redis.createClient(credentials.port, credentials.hostname);
+publisher
+		.on(
+				'error',
+				function(err) {
+					if (isDocker && err.message.match('getaddrinfo EAI_AGAIN')) {
+						console
+								.log('Waiting for IBM Containers networking to be available...');
+						return;
+					}
+					console
+							.error('There was an error with the publisher redis client '
+									+ err);
+				});
+publisher.on('connect', function() {
+	console.log('The publisher redis client has connected!');
+});
+
+if (credentials.password !== '' && credentials.password !== undefined) {
+	subscriber.auth(credentials.password);
+	publisher.auth(credentials.password);
+}
+
 app.use(helmet.xssFilter());
 app.use(express.json());
 
@@ -65,28 +133,30 @@ app.get('*', function(req, res) {
 	res.sendfile(__dirname + '/public/index.html');
 });
 
-/*
- var instanceId = !appEnv.isLocal ? appEnv.app.instance_id : undefined;
+var instanceId = !appEnv.isLocal ? appEnv.app.instance_id : undefined;
+console.log("----------------the instance id " + instanceId);
+app.get('/instanceId', function(req, res) {
+	console.log("----------------the app .get method " + instanceId);
+	if (!instanceId) {
+		res.writeHeader(204);
+		res.end();
+	} else {
+		res.end(JSON.stringify({
+			id : instanceId
+		}));
+	}
+});
 
- console.log("----------------the instance id " + instanceId);
- app.get('/instanceId', function(req, res) {
- console.log("----------------the app .get method " + instanceId);
- if(!instanceId) {
- res.writeHeader(204);
- res.end();
- } else {
- res.end(JSON.stringify({
- id : instanceId
- }));
- }
- });
- */
+setInterval(function() {
+	while (clients.length > 0) {
+		var client = clients.pop();
+		client.writeHeader(204);
+		client.end();
+	}
+}, 60000);
+
 io.on('connection', function(socket) {
 	var addedUser = false;
-
-	//	var redisClient = redis.createClient();
-	//	  redisClient.subscribe('message');	
-
 	// when the client emits 'new message', this listens and executes
 	socket.on('new message',
 			function(data) {
@@ -158,45 +228,32 @@ io.on('connection', function(socket) {
 				console.log("User is new");
 				socket.nickname = usern;
 				users.push(socket.nickname);
-				console.log('users[data.name] == ' + users[data.name]);
-				console.log('socket.nickname ' + socket.nickname);
 				usernames[socket.nickname] = socket;
 				++numUsers;
 				addedUser = true;
-				// Store user data in db
-				redisdb.hset([ socket.id, 'connectionDate', new Date() ],
-						redisdb.print);
-				redisdb.hset([ socket.id, 'socketID', socket.id ],
-						redisdb.print);
-				redisdb.hset([ socket.id, 'username', usern ], redisdb.print);
-
-				//Redis end
-				var instanceId = !appEnv.isLocal ? appEnv.app.instance_id
-						: undefined;
 				db.insert({
 					_id : usern,
 					password : pass
-				},
-						function(err, body) {
-							console.log('User isnt registered yet');
-							console.log('Inserted in DB is: ' + usern + " PW: "
-									+ pass);
-							if (!err) {
-								console.log('User is now registered');
-								console.log(body);
-							}
-							socket.emit('login', {
-								numUsers : numUsers
-							});
-							loginStatus = 1;
-							callback(loginStatus);
-							socket.broadcast.emit('user joined', {
-								username : socket.nickname,
-								numUsers : numUsers,
-								instanceId : instanceId
-							});
+				}, function(err, body) {
+					console.log('Inserted in DB entry is: ' + usern + " PW: "
+							+ pass);
+					if (!err) {
+						console.log('User is now registered');
+						console.log(body);
+					}
+					socket.emit('login', {
+						numUsers : numUsers
+					});
+					loginStatus = 1;
+					callback(loginStatus);
+					console.log('called callback after registration');
+					socket.broadcast.emit('user joined', {
+						username : socket.nickname,
+						numUsers : numUsers
+					});
+					console.log('end of if to register the user');
 
-						});
+				});
 			} else if (data.pw === dataGet.password) {
 				socket.nickname = usern;
 				users.push(socket.nickname);
@@ -223,11 +280,11 @@ io.on('connection', function(socket) {
 					username : socket.nickname,
 					numUsers : numUsers
 				});
-				// callback(true);
+				//callback(true);
 			} else {
 				loginStatus = 3;
 				callback(loginStatus);
-				// callback(false);
+				//callback(false);
 			}
 		});
 	});
@@ -251,7 +308,7 @@ io.on('connection', function(socket) {
 		// remove the username from global usernames list
 		if (addedUser) {
 			users.splice(users.indexOf(socket.nickname), 1);
-			// changed
+			//changed
 			delete users[socket.nickname];
 			delete usernames[socket.nickname];
 			--numUsers;
