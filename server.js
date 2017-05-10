@@ -5,10 +5,11 @@
 var express = require('express');
 var app = express();
 var server = require('http').createServer(app);
-// var io = require('socket.io').listen(server);
 var io = require('socket.io').listen(server, {
 	transports : [ 'websocket' ]
-});
+});// var io = require('socket.io').listen(server);
+var redis = require('redis');
+var nconf = require('nconf');
 var port = process.env.PORT || 80;
 var users = [];
 var usernames = {};
@@ -22,10 +23,12 @@ var prints;
 var cloudant = {
 	url : "https://cd01382f-fb5a-4ba8-91eb-90711c0bf890-bluemix:e458604d6682e3144429086aed374ded2ae1944e91dfa08218a6a27155affab7@cd01382f-fb5a-4ba8-91eb-90711c0bf890-bluemix.cloudant.com"
 };
+nconf.env();
 var nano = require("nano")(cloudant.url);
+var isDocker = nconf.get('DOCKER') === 'true' ? true : false;
 
-var redisdb = require('socket.io-redis');
-io.adapter(redisdb({
+var redis = require('socket.io-redis');
+io.adapter(redis({
 	host : 'pub-redis-16144.dal-05.1.sl.garantiadata.com',
 	port : '16144',
 	password : 'sEl6ybtp7S4FqDvW'
@@ -54,6 +57,78 @@ app.use(function(req, res, next) {
 	}
 });
 
+var redisService = appEnv.getService('redis-chatter');
+var credentials;
+if (!redisService || redisService === null) {
+	if (isDocker) {
+		credentials = {
+			"hostname" : "redis",
+			"port" : 16144
+		};
+	} else {
+		credentials = {
+			"hostname" : "127.0.0.1",
+			"port" : 16144
+		};
+	}
+} else {
+	if (isDocker) {
+		console.log('The app is running in a Docker container on Bluemix.');
+	}
+	credentials = redisService.credentials;
+}
+
+// We need 2 Redis clients one to listen for events, one to publish events
+var subscriber = redis.createClient(credentials.port, credentials.hostname);
+subscriber
+		.on(
+				'error',
+				function(err) {
+					if (isDocker && err.message.match('getaddrinfo EAI_AGAIN')) {
+						console
+								.log('Waiting for IBM Containers networking to be available...');
+						return;
+					}
+					console
+							.error('There was an error with the subscriber redis client '
+									+ err);
+				});
+subscriber.on('connect', function() {
+	console.log('The subscriber redis client has connected!');
+
+	subscriber.on('message', function(channel, msg) {
+		if (channel === 'chatter') {
+			while (users.length > 0) {
+				var client = users.pop();
+				client.end(msg);
+			}
+		}
+	});
+	subscriber.subscribe('chatter');
+});
+var publisher = redis.createClient(credentials.port, credentials.hostname);
+publisher
+		.on(
+				'error',
+				function(err) {
+					if (isDocker && err.message.match('getaddrinfo EAI_AGAIN')) {
+						console
+								.log('Waiting for IBM Containers networking to be available...');
+						return;
+					}
+					console
+							.error('There was an error with the publisher redis client '
+									+ err);
+				});
+publisher.on('connect', function() {
+	console.log('The publisher redis client has connected!');
+});
+
+if (credentials.password !== '' && credentials.password !== undefined) {
+	subscriber.auth(credentials.password);
+	publisher.auth(credentials.password);
+}
+
 server.listen(port, function() {
 	console.log('Updated : Server listening at port %d', port);
 });
@@ -66,28 +141,8 @@ app.get('*', function(req, res) {
 	res.sendfile(__dirname + '/public/index.html');
 });
 
-/*
- var instanceId = !appEnv.isLocal ? appEnv.app.instance_id : undefined;
-
- console.log("----------------the instance id " + instanceId);
- app.get('/instanceId', function(req, res) {
- console.log("----------------the app .get method " + instanceId);
- if(!instanceId) {
- res.writeHeader(204);
- res.end();
- } else {
- res.end(JSON.stringify({
- id : instanceId
- }));
- }
- });
- */
 io.on('connection', function(socket) {
 	var addedUser = false;
-
-	//	var redisClient = redis.createClient();
-	//	  redisClient.subscribe('message');	
-
 	// when the client emits 'new message', this listens and executes
 	socket.on('new message',
 			function(data) {
@@ -148,6 +203,8 @@ io.on('connection', function(socket) {
 				console.log('I sent it');
 			});
 
+	var instanceId = !appEnv.isLocal ? appEnv.app.instance_id : undefined;
+
 	// Register a new User
 	socket.on('register new user', function(data, callback) {
 		console.log("REGISTER NEW USER CALLED");
@@ -164,16 +221,6 @@ io.on('connection', function(socket) {
 				usernames[socket.nickname] = socket;
 				++numUsers;
 				addedUser = true;
-				// Store user data in db
-				redisdb.hset([ socket.id, 'connectionDate', new Date() ],
-						redisdb.print);
-				redisdb.hset([ socket.id, 'socketID', socket.id ],
-						redisdb.print);
-				redisdb.hset([ socket.id, 'username', usern ], redisdb.print);
-
-				//Redis end
-				var instanceId = !appEnv.isLocal ? appEnv.app.instance_id
-						: undefined;
 				db.insert({
 					_id : usern,
 					password : pass
@@ -245,6 +292,19 @@ io.on('connection', function(socket) {
 		socket.broadcast.emit('stop typing', {
 			username : socket.nickname
 		});
+	});
+
+	console.log("----------------the instance id " + instanceId);
+	app.get('/instanceId', function(req, res) {
+		console.log("----------------the app .get method " + instanceId);
+		if (!instanceId) {
+			res.writeHeader(204);
+			res.end();
+		} else {
+			res.end(JSON.stringify({
+				id : instanceId
+			}));
+		}
 	});
 
 	// when the user disconnects.. perform this
