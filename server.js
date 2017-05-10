@@ -54,14 +54,14 @@ io.adapter(redis({
 	password : 'sEl6ybtp7S4FqDvW'
 }));
 
-var redisService = appEnv.getService('RedisChilloutsDB');
-var credentials;
-if(!redisService || redisService === null) {
-	credentials = {"hostname":"redis", "port":16144};
-} else {
-	console.log('The app is running in a Docker container on Bluemix.');
-  credentials = redisService.credentials;
-}
+//var redisService = appEnv.getService('RedisChilloutsDB');
+//var credentials;
+//if(!redisService || redisService === null) {
+//	credentials = {"hostname":"redis", "port":16144};
+//} else {
+//	console.log('The app is running in a Docker container on Bluemix.');
+//  credentials = redisService.credentials;
+//}
 
 server.listen(port, function() {
 	console.log('Updated : Server listening at port %d', port);
@@ -238,14 +238,6 @@ io.on('connection', function(socket) {
 			}));
 		}
 	});
-	
-	setInterval(function() {
-		while (users.length > 0) {
-			var client = users.pop();
-			client.writeHeader(204);
-			client.end();
-		}
-	}, 60000);
 
 	// when the user disconnects.. perform this
 	socket.on('disconnect', function() {
