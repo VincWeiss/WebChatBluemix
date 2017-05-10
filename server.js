@@ -1,6 +1,5 @@
 /** CloudComputing WebChat on IBM Bluemix **/
 /** Server Side App * */
-
   var express = require('express');
   var app = express();
   var server = require('http').createServer(app);
@@ -59,22 +58,6 @@ app.get('*', function (req, res){
 	res.sendfile(__dirname + '/public/index.html');
 	});
 
-/*
-var instanceId = !appEnv.isLocal ? appEnv.app.instance_id : undefined;
-
-console.log("----------------the instance id " + instanceId);
-app.get('/instanceId', function(req, res) {
-	console.log("----------------the app .get method " + instanceId);
-  if(!instanceId) {
-    res.writeHeader(204);
-    res.end();
-  } else {
-    res.end(JSON.stringify({
-      id : instanceId
-    }));
-  }
-});
-*/
 io.on('connection', function (socket) {
 	var addedUser = false;
 	// when the client emits 'new message', this listens and executes
@@ -135,6 +118,8 @@ io.on('connection', function (socket) {
 		console.log('I sent it');
 	});
 	
+	var instanceId = !appEnv.isLocal ? appEnv.app.instance_id : undefined;
+	
     // Register a new User
     socket.on('register new user', function(data, callback){
     	console.log("REGISTER NEW USER CALLED");
@@ -151,7 +136,6 @@ io.on('connection', function (socket) {
 			      usernames[socket.nickname] = socket;
 			      ++numUsers;
 			      addedUser = true;
-			      var instanceId = !appEnv.isLocal ? appEnv.app.instance_id : undefined;
 			      db.insert({ _id:usern, password:pass}, function(err, body) {
 			    	  console.log('User isnt registered yet');
 			    	  console.log('Inserted in DB is: ' + usern + " PW: " + pass);
@@ -215,6 +199,19 @@ io.on('connection', function (socket) {
       socket.broadcast.emit('stop typing', {
         username: socket.nickname
       });
+    });
+    
+    console.log("----------------the instance id " + instanceId);
+    app.get('/instanceId', function(req, res) {
+    	console.log("----------------the app .get method " + instanceId);
+      if(!instanceId) {
+        res.writeHeader(204);
+        res.end();
+      } else {
+        res.end(JSON.stringify({
+          id : instanceId
+        }));
+      }
     });
   
     // when the user disconnects.. perform this
