@@ -1,25 +1,30 @@
 {
-  "name": "ChilloutsDB",
+  "name": "package.json",
   "version": "0.0.1",
   "scripts": {
-	    "start": "node server.js"
-	  },
+    "start": "node server.js"
+  },
   "dependencies": {
-<<<<<<< HEAD
-	   "cfenv": "^1.0.0",
-	   "jade": "^1.10.0",
-	   "nano": "^6.1.5",
-	    "express": "3.x",
-=======
-	  	"cfenv": "^1.0.0",
-	  	"jade": "^1.10.0",
-	  	"nano": "^6.1.5",
-	  	"http-post": "^0.1.1",
-	  	"nconf": "^0.7.2",
-	  	"express": "3.4.8",
->>>>>>> 27f030ccf83fdf367a2c3cdcfdb004dbc71f023c
-	    "socket.io": "*",
-	    "nconf": "^0.7.2",
-	    "redis": "*"
-  }
+    "nano": "^6.1.5",
+    "cfenv": "^1.0.0",
+    "jade": "^1.10.0",
+    "http-post": "^0.1.1",
+    "nconf": "^0.7.2",
+    "express": "3.4.8",
+    "socket.io": "*",
+    "redis": "*"
+  },
+  "description": "<<<<<<< HEAD\r So that we all can work together follow the steps below:",
+  "main": "server.js",
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/OxanaDoroshkevich/WebChatBluemix.git"
+  },
+  "author": "oxana dorohskevich",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/OxanaDoroshkevich/WebChatBluemix/issues"
+  },
+  "homepage": "https://github.com/OxanaDoroshkevich/WebChatBluemix#readme"
 }

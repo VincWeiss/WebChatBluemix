@@ -276,8 +276,6 @@ $(function() {
 		return COLORS[index];
 	}
 	
-<<<<<<< HEAD
-=======
 	$.getJSON('/instanceId', function(response, statusText, jqXHR) {
 		console.log("________________get the instance id" + response.id);
 		  if(jqXHR.status === 200) {
@@ -285,7 +283,6 @@ $(function() {
 		    $('#instance-id-value').html(response.id);
 		  }
 		});
->>>>>>> 27f030ccf83fdf367a2c3cdcfdb004dbc71f023c
 	
 	// Keyboard events
 	$window.keydown(function (event) {

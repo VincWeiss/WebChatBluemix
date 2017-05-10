@@ -5,18 +5,11 @@
   var fs = require('fs');
   var app = express();
   var server = require('http').createServer(app);
-<<<<<<< HEAD
-// var io = require('socket.io').listen(server);
-  var io = require('socket.io').listen(server,{transports:['websocket']});
-  var redis = require('redis');
-  var nconf = require('nconf');
-=======
   var io = require('socket.io').listen(server);
   var cfenv = require('cfenv');	
   var redis = require('redis');
   var nconf = require('nconf');
   var appEnv = cfenv.getAppEnv();
->>>>>>> 27f030ccf83fdf367a2c3cdcfdb004dbc71f023c
   var port = process.env.PORT || 80;
   var users = [];
   var usernames = {};  
@@ -29,14 +22,10 @@
 		  url : "https://cd01382f-fb5a-4ba8-91eb-90711c0bf890-bluemix:e458604d6682e3144429086aed374ded2ae1944e91dfa08218a6a27155affab7@cd01382f-fb5a-4ba8-91eb-90711c0bf890-bluemix.cloudant.com"          	
   }; 
   var nano = require("nano")(cloudant.url);
-<<<<<<< HEAD
-  
   var redisdb =require('socket.io-redis');
   io.adapter(redisdb({ host:'pub-redis-16144.dal-05.1.sl.garantiadata.com', port:'16144', password:'sEl6ybtp7S4FqDvW'}));
-=======
   nconf.env();
   var isDocker = nconf.get('DOCKER') === 'true' ? true : false;
->>>>>>> 27f030ccf83fdf367a2c3cdcfdb004dbc71f023c
 
 var db = nano.db.use("usercredentials");
 	if (dbCreds) {
@@ -46,7 +35,6 @@ var db = nano.db.use("usercredentials");
 	} else {  
 		console.log('NO DB!'); 
 	}
-<<<<<<< HEAD
 	
 var helmet = require('helmet');
 // Sets "X-XSS-Protection: 1; mode=block".
@@ -114,7 +102,6 @@ if (credentials.password != '' && credentials.password != undefined) {
     subscriber.auth(credentials.password);
     publisher.auth(credentials.password);
   }
-=======
 
 //Sets "X-XSS-Protection: 1; mode=block".
 	//hbcshxds
@@ -178,7 +165,6 @@ if (credentials.password !== '' && credentials.password !== undefined) {
 
 app.use(helmet.xssFilter());
 app.use(express.json());
->>>>>>> 27f030ccf83fdf367a2c3cdcfdb004dbc71f023c
 
 app.enable('trust proxy');
 app.use(function (req, res, next) { 	
@@ -201,13 +187,10 @@ app.get('/', function (req, res){
 	res.sendfile(__dirname + '/public/index.html');
 	});
 
-<<<<<<< HEAD
 /*
 var instanceId = !appEnv.isLocal ? appEnv.app.instance_id : undefined;
 
-=======
 var instanceId = !appEnv.isLocal ? appEnv.app.instance_id : undefined;
->>>>>>> 27f030ccf83fdf367a2c3cdcfdb004dbc71f023c
 console.log("----------------the instance id " + instanceId);
 app.get('/instanceId', function(req, res) {
 	console.log("----------------the app .get method " + instanceId);
@@ -220,9 +203,7 @@ app.get('/instanceId', function(req, res) {
     }));
   }
 });
-<<<<<<< HEAD
 */
-=======
 
 setInterval(function() {
 	  while(users.length > 0) {
@@ -232,7 +213,6 @@ setInterval(function() {
 	  }
 	}, 60000);
 
->>>>>>> 27f030ccf83fdf367a2c3cdcfdb004dbc71f023c
 io.on('connection', function (socket) {
 	var addedUser = false;
 
