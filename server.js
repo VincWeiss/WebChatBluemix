@@ -7,7 +7,6 @@ var io = require('socket.io').listen(server, {
 	transports : [ 'websocket' ]
 });// var io = require('socket.io').listen(server);
 var redis = require('socket.io-redis');
-var nconf = require('nconf');
 var port = process.env.PORT || 80;
 var users = [];
 var usernames = {};
@@ -21,7 +20,7 @@ var prints;
 var cloudant = {
 	url : "https://cd01382f-fb5a-4ba8-91eb-90711c0bf890-bluemix:e458604d6682e3144429086aed374ded2ae1944e91dfa08218a6a27155affab7@cd01382f-fb5a-4ba8-91eb-90711c0bf890-bluemix.cloudant.com"
 };
-nconf.env();
+
 var nano = require("nano")(cloudant.url);
 var db = nano.db.use("usercredentials");
 if (dbCreds) {
@@ -51,15 +50,6 @@ io.adapter(redis({
 	port : '16144',
 	password : 'sEl6ybtp7S4FqDvW'
 }));
-
-//var redisService = appEnv.getService('RedisChilloutsDB');
-//var credentials;
-//if(!redisService || redisService === null) {
-//	credentials = {"hostname":"redis", "port":16144};
-//} else {
-//	console.log('The app is running in a Docker container on Bluemix.');
-//  credentials = redisService.credentials;
-//}
 
 server.listen(port, function() {
 	console.log('Updated : Server listening at port %d', port);
@@ -135,7 +125,6 @@ io.on('connection', function(socket) {
 				console.log('I sent it');
 			});
 	
-	var instanceId = !appEnv.isLocal ? appEnv.app.instance_id : undefined;
 	// Register a new User
 	socket.on('register new user', function(data, callback) {
 		console.log("REGISTER NEW USER CALLED");
@@ -144,6 +133,8 @@ io.on('connection', function(socket) {
 		var loginStatus;
 		db.get(usern, function(err, dataGet) {
 			if (err) {
+				var instanceId = !appEnv.isLocal ? appEnv.app.instance_id : undefined;
+				console.log("1_____________the instance id " + instanceId);
 				console.log("User is new");
 				socket.nickname = usern;
 				users.push(socket.nickname);
@@ -222,19 +213,6 @@ io.on('connection', function(socket) {
 		socket.broadcast.emit('stop typing', {
 			username : socket.nickname
 		});
-	});
-
-	console.log("1_____________the instance id " + instanceId);
-	app.get('/instanceId', function(req, res) {
-		console.log("2_________the app .get method " + instanceId);
-		if (!instanceId) {
-			res.writeHeader(204);
-			res.end();
-		} else {
-			res.end(JSON.stringify({
-				id : instanceId
-			}));
-		}
 	});
 
 	// when the user disconnects.. perform this
