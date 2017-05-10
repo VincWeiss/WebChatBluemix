@@ -2,28 +2,36 @@
 /** Server Side App * */
 
 var express = require('express');
-var fs = require('fs');
 var app = express();
 var server = require('http').createServer(app);
-var io = require('socket.io').listen(server);
-var cfenv = require('cfenv');
+var io = require('socket.io').listen(server, {
+	transports : [ 'websocket' ]
+});// var io = require('socket.io').listen(server);
 var redis = require('redis');
 var nconf = require('nconf');
-var appEnv = cfenv.getAppEnv();
 var port = process.env.PORT || 80;
 var users = [];
 var usernames = {};
 var numUsers = 0;
 var userlist = '';
+var cfenv = require('cfenv');
+var appEnv = cfenv.getAppEnv();
 var dbCreds = appEnv.getServiceCreds('ChilloutsData');
 var nano;
 var prints;
 var cloudant = {
 	url : "https://cd01382f-fb5a-4ba8-91eb-90711c0bf890-bluemix:e458604d6682e3144429086aed374ded2ae1944e91dfa08218a6a27155affab7@cd01382f-fb5a-4ba8-91eb-90711c0bf890-bluemix.cloudant.com"
 };
-var nano = require("nano")(cloudant.url);
 nconf.env();
+var nano = require("nano")(cloudant.url);
 var isDocker = nconf.get('DOCKER') === 'true' ? true : false;
+
+var redis = require('socket.io-redis');
+io.adapter(redis({
+	host : 'pub-redis-16144.dal-05.1.sl.garantiadata.com',
+	port : '16144',
+	password : 'sEl6ybtp7S4FqDvW'
+}));
 
 var db = nano.db.use("usercredentials");
 if (dbCreds) {
@@ -34,22 +42,32 @@ if (dbCreds) {
 	console.log('NO DB!');
 }
 
-//Sets "X-XSS-Protection: 1; mode=block".
 var helmet = require('helmet');
+// Sets "X-XSS-Protection: 1; mode=block".
+app.use(helmet.xssFilter());
+app.use(express.json());
 
-//implementation of our redis service
-var redisService = appEnv.getService('RedisChilloutsDB');
+app.enable('trust proxy');
+app.use(function(req, res, next) {
+	if (req.secure) {
+		next();
+	} else {
+		res.redirect('https://' + req.headers.host);
+	}
+});
+
+var redisService = appEnv.getService('redis-chatter');
 var credentials;
 if (!redisService || redisService === null) {
 	if (isDocker) {
 		credentials = {
 			"hostname" : "redis",
-			"port" : port
+			"port" : 16144
 		};
 	} else {
 		credentials = {
 			"hostname" : "127.0.0.1",
-			"port" : port
+			"port" : 16144
 		};
 	}
 } else {
@@ -59,6 +77,7 @@ if (!redisService || redisService === null) {
 	credentials = redisService.credentials;
 }
 
+// We need 2 Redis clients one to listen for events, one to publish events
 var subscriber = redis.createClient(credentials.port, credentials.hostname);
 subscriber
 		.on(
@@ -109,18 +128,6 @@ if (credentials.password !== '' && credentials.password !== undefined) {
 	publisher.auth(credentials.password);
 }
 
-app.use(helmet.xssFilter());
-app.use(express.json());
-
-app.enable('trust proxy');
-app.use(function(req, res, next) {
-	if (req.secure) {
-		next();
-	} else {
-		res.redirect('https://' + req.headers.host);
-	}
-});
-
 server.listen(port, function() {
 	console.log('Updated : Server listening at port %d', port);
 });
@@ -132,28 +139,6 @@ app.configure(function() {
 app.get('*', function(req, res) {
 	res.sendfile(__dirname + '/public/index.html');
 });
-
-var instanceId = !appEnv.isLocal ? appEnv.app.instance_id : undefined;
-console.log("----------------the instance id " + instanceId);
-app.get('/instanceId', function(req, res) {
-	console.log("----------------the app .get method " + instanceId);
-	if (!instanceId) {
-		res.writeHeader(204);
-		res.end();
-	} else {
-		res.end(JSON.stringify({
-			id : instanceId
-		}));
-	}
-});
-
-setInterval(function() {
-	while (clients.length > 0) {
-		var client = clients.pop();
-		client.writeHeader(204);
-		client.end();
-	}
-}, 60000);
 
 io.on('connection', function(socket) {
 	var addedUser = false;
@@ -217,6 +202,8 @@ io.on('connection', function(socket) {
 				console.log('I sent it');
 			});
 
+	var instanceId = !appEnv.isLocal ? appEnv.app.instance_id : undefined;
+
 	// Register a new User
 	socket.on('register new user', function(data, callback) {
 		console.log("REGISTER NEW USER CALLED");
@@ -228,32 +215,35 @@ io.on('connection', function(socket) {
 				console.log("User is new");
 				socket.nickname = usern;
 				users.push(socket.nickname);
+				console.log('users[data.name] == ' + users[data.name]);
+				console.log('socket.nickname ' + socket.nickname);
 				usernames[socket.nickname] = socket;
 				++numUsers;
 				addedUser = true;
 				db.insert({
 					_id : usern,
 					password : pass
-				}, function(err, body) {
-					console.log('Inserted in DB entry is: ' + usern + " PW: "
-							+ pass);
-					if (!err) {
-						console.log('User is now registered');
-						console.log(body);
-					}
-					socket.emit('login', {
-						numUsers : numUsers
-					});
-					loginStatus = 1;
-					callback(loginStatus);
-					console.log('called callback after registration');
-					socket.broadcast.emit('user joined', {
-						username : socket.nickname,
-						numUsers : numUsers
-					});
-					console.log('end of if to register the user');
+				},
+						function(err, body) {
+							console.log('User isnt registered yet');
+							console.log('Inserted in DB is: ' + usern + " PW: "
+									+ pass);
+							if (!err) {
+								console.log('User is now registered');
+								console.log(body);
+							}
+							socket.emit('login', {
+								numUsers : numUsers
+							});
+							loginStatus = 1;
+							callback(loginStatus);
+							socket.broadcast.emit('user joined', {
+								username : socket.nickname,
+								numUsers : numUsers,
+								instanceId : instanceId
+							});
 
-				});
+						});
 			} else if (data.pw === dataGet.password) {
 				socket.nickname = usern;
 				users.push(socket.nickname);
@@ -280,11 +270,11 @@ io.on('connection', function(socket) {
 					username : socket.nickname,
 					numUsers : numUsers
 				});
-				//callback(true);
+				// callback(true);
 			} else {
 				loginStatus = 3;
 				callback(loginStatus);
-				//callback(false);
+				// callback(false);
 			}
 		});
 	});
@@ -303,12 +293,25 @@ io.on('connection', function(socket) {
 		});
 	});
 
+	console.log("----------------the instance id " + instanceId);
+	app.get('/instanceId', function(req, res) {
+		console.log("----------------the app .get method " + instanceId);
+		if (!instanceId) {
+			res.writeHeader(204);
+			res.end();
+		} else {
+			res.end(JSON.stringify({
+				id : instanceId
+			}));
+		}
+	});
+
 	// when the user disconnects.. perform this
 	socket.on('disconnect', function() {
 		// remove the username from global usernames list
 		if (addedUser) {
 			users.splice(users.indexOf(socket.nickname), 1);
-			//changed
+			// changed
 			delete users[socket.nickname];
 			delete usernames[socket.nickname];
 			--numUsers;
