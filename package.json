@@ -10,7 +10,7 @@
 	   "nano": "^6.1.5",
 	   "nconf": "^0.7.2",
 	   "redis": "*",
-	   "express": "3.x",
+	   "express": "3.4.8",
 	   "socket.io": "*"
   }
 }
