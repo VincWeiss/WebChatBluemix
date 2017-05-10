@@ -156,9 +156,11 @@ io.on('connection', function (socket) {
 			      ++numUsers;
 			      addedUser = true;
 			      // Store user data in db
-			      redisdb.hset([socket.id, 'connectionDate', new Date()], redisdb.print);
-			      redisdb.hset([socket.id, 'socketID', socket.id], redisdb.print);
-			      redisdb.hset([socket.id, 'username', usern], redisdb.print);
+//			      redisdb.hset([socket.id, 'connectionDate', new Date()], redisdb.print);
+//			      redisdb.hset([socket.id, 'socketID', socket.id], redisdb.print);
+//			      redisdb.hset([socket.id, 'username', usern], redisdb.print);
+			      console.log('the redis db connections ------>' + redisdb.getConnections);
+			      console.log('usernumber! : ' + redisdb.user);
 			      //Redis end
 			      var instanceId = !appEnv.isLocal ? appEnv.app.instance_id : undefined;
 			      db.insert({ _id:usern, password:pass}, function(err, body) {
