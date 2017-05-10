@@ -30,19 +30,17 @@ $(function() {
 	var $currentInput = $usernameInput.focus();
 
 	// var socket = io();
-	// var socket = io({
-	// transports : [ 'websocket' ]
-	// });
-	// socket = io.connect();
+	var socket = io({
+		transports : [ 'websocket' ]
+	});
+	socket = io.connect();
 
 	// instanceID.textContent="newtext";
-	$.getJSON('/instanceId', function(response, statusText, jqXHR) {
-		if (jqXHR.status === 200) {
-			$('#instance-id').show();
-			$('#instance-id-value').html(response.id);
-		}
-	});
-
+	/*
+	 * $.getJSON('/instanceId', function(response, statusText, jqXHR) {
+	 * if(jqXHR.status == 200) { $('#instance-id').show();
+	 * $('#instance-id-value').html(response.id); } });
+	 */
 	// This logs the current number of participants
 	function addParticipantsMessage(data) {
 		var message = '';
