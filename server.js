@@ -23,7 +23,7 @@ var cloudant = {
 };
 nconf.env();
 var nano = require("nano")(cloudant.url);
-var isDocker = nconf.get('DOCKER') === 'true' ? true : false;
+//var isDocker = nconf.get('DOCKER') === 'true' ? true : false;
 
 var redis = require('socket.io-redis');
 io.adapter(redis({
@@ -55,25 +55,19 @@ app.use(function(req, res, next) {
 	}
 });
 
-var redisService = appEnv.getService('redis-chatter');
+var redisService = appEnv.getService('RedisChilloutsDB');
 var credentials;
 if(!redisService || redisService === null) {
-  if(isDocker) {
-    credentials = {"hostname":"redis", "port":16144};
-  } else {
-    credentials = {"hostname":"127.0.0.1", "port":16144};
-  }
+	credentials = {"hostname":"redis", "port":16144};
 } else {
-  if(isDocker) {
-    console.log('The app is running in a Docker container on Bluemix.');
-  }
+	console.log('The app is running in a Docker container on Bluemix.');
   credentials = redisService.credentials;
 }
 
 // We need 2 Redis clients one to listen for events, one to publish events
 var subscriber = redis.createClient(credentials.port, credentials.hostname);
 subscriber.on('error', function(err) {
-  if (isDocker && err.message.match('getaddrinfo EAI_AGAIN')) {
+  if (err.message.match('getaddrinfo EAI_AGAIN')) {
     console.log('Waiting for IBM Containers networking to be available...');
     return;
   }
@@ -94,7 +88,7 @@ subscriber.on('connect', function() {
 });
 var publisher = redis.createClient(credentials.port, credentials.hostname);
 publisher.on('error', function(err) {
-  if (isDocker && err.message.match('getaddrinfo EAI_AGAIN')) {
+  if (err.message.match('getaddrinfo EAI_AGAIN')) {
     console.log('Waiting for IBM Containers networking to be available...');
     return;
   }
@@ -183,8 +177,6 @@ io.on('connection', function(socket) {
 				console.log('I sent it');
 			});
 
-	var instanceId = !appEnv.isLocal ? appEnv.app.instance_id : undefined;
-
 	// Register a new User
 	socket.on('register new user', function(data, callback) {
 		console.log("REGISTER NEW USER CALLED");
@@ -207,8 +199,7 @@ io.on('connection', function(socket) {
 				},
 						function(err, body) {
 							console.log('User isnt registered yet');
-							console.log('Inserted in DB is: ' + usern + " PW: "
-									+ pass);
+							console.log('Inserted in DB is: '+ usern + 'PW: ' + pass);
 							if (!err) {
 								console.log('User is now registered');
 								console.log(body);
@@ -305,3 +296,23 @@ io.on('connection', function(socket) {
 		}
 	});
 });
+
+var instanceId = !appEnv.isLocal ? appEnv.app.instance_id : undefined;
+app.get('/instanceId', function(req, res) {
+  if(!instanceId) {
+    res.writeHeader(204);
+    res.end();
+  } else {
+    res.end(JSON.stringify({
+      id : instanceId
+    }));
+  }
+});
+
+setInterval(function() {
+	while (users.length > 0) {
+		var client = users.pop();
+		client.writeHeader(204);
+		client.end();
+	}
+}, 60000);
