@@ -29,19 +29,10 @@ $(function() {
 	// anything. See $window.keydown(function (event) for more info. Line 227
 	var $currentInput = $usernameInput.focus();
 
-	// var socket = io();
-//	var socket = io({
-//		transports : [ 'websocket' ]
-//	});
-//	socket = io.connect();
-
-	// instanceID.textContent="newtext";
-	$.getJSON('/instanceId', function(response, statusText, jqXHR) {
-		if (jqXHR.status === 200) {
-			$('#instance-id').show();
-			$('#instance-id-value').html(response.id);
-		}
+	var socket = io({
+		transports : [ 'websocket' ]
 	});
+	socket = io.connect();
 
 	// This logs the current number of participants
 	function addParticipantsMessage(data) {
