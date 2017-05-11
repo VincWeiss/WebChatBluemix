@@ -9,7 +9,7 @@ var server = require('http').createServer(app);
 var io = require('socket.io').listen(server, {
 	transports : [ 'websocket' ]
 });
-var redis = require('socket.io-redis');
+var redis = require('redis');
 var cfenv = require('cfenv');
 var cloudant = {
 		url : "https://cd01382f-fb5a-4ba8-91eb-90711c0bf890-bluemix:e458604d6682e3144429086aed374ded2ae1944e91dfa08218a6a27155affab7@cd01382f-fb5a-4ba8-91eb-90711c0bf890-bluemix.cloudant.com"
