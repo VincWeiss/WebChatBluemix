@@ -13,8 +13,8 @@ var redis = require('redis');
 var cfEnv = require('cf-env');
 var cfenv = require('cfenv');
 var cloudant = {
-		url : "https://cd01382f-fb5a-4ba8-91eb-90711c0bf890-bluemix:e458604d6682e3144429086aed374ded2ae1944e91dfa08218a6a27155affab7@cd01382f-fb5a-4ba8-91eb-90711c0bf890-bluemix.cloudant.com"
-	};
+	url : "https://cd01382f-fb5a-4ba8-91eb-90711c0bf890-bluemix:e458604d6682e3144429086aed374ded2ae1944e91dfa08218a6a27155affab7@cd01382f-fb5a-4ba8-91eb-90711c0bf890-bluemix.cloudant.com"
+};
 var nano = require("nano")(cloudant.url);
 var port = process.env.PORT || 80;
 var users = [];
@@ -26,41 +26,34 @@ var dbCreds = appEnv.getServiceCreds('ChilloutsData');
 var nano;
 var prints;
 var redisService = cfEnv.getService('RedisChilloutsDB');
-var credentials = !redisService || redisService === null ?  {"host":"127.0.0.1", "port":6379} : redisService.credentials;
+var credentials = !redisService || redisService === null ? {
+	"host" : "127.0.0.1",
+	"port" : 6379
+} : redisService.credentials;
 console.log('the redis credentials : ' + credentials);
 
 var subscriber = redis.createClient(credentials.port, credentials.hostname);
 subscriber.on("error", function(err) {
-  console.error('There was an error with the redis client ' + err);
+	console.error('There was an error with the redis client ' + err);
 });
 var publisher = redis.createClient(credentials.port, credentials.hostname);
 publisher.on("error", function(err) {
-  console.error('There was an error with the redis client ' + err);
+	console.error('There was an error with the redis client ' + err);
 });
 if (credentials.password !== '') {
-  subscriber.auth(credentials.password);
-  publisher.auth(credentials.password);
+	subscriber.auth(credentials.password);
+	publisher.auth(credentials.password);
 }
 
 subscriber.on('message', function(channel, msg) {
-	  if(channel === 'chatter') {
-	    while(users.length > 0) {
-	      var client = users.pop();
-	      client.end(msg);
-	    }
-	  }
-	});
-	subscriber.subscribe('chatter');
-
-//io.adapter(redis({
-//	host : 'pub-redis-16144.dal-05.1.sl.garantiadata.com',
-//	port : '16144',
-//	password : 'sEl6ybtp7S4FqDvW'
-//}));
-
-//redisService.on('connect', function() {
-//    console.log('connected to the redis DB or better the function is called o_O');
-//});
+	if (channel === 'chatter') {
+		while (users.length > 0) {
+			var client = users.pop();
+			client.end(msg);
+		}
+	}
+});
+subscriber.subscribe('chatter');
 
 var db = nano.db.use("usercredentials");
 if (dbCreds) {
@@ -96,6 +89,21 @@ app.configure(function() {
 app.get('*', function(req, res) {
 	res.sendfile(__dirname + '/public/index.html');
 });
+
+app.post('/msg', function(req, res) {
+	var message = req.body;
+	publisher.publish("chatter", JSON.stringify(message));
+	res.end();
+});
+
+//This interval will clean up all the clients every minute to avoid timeouts
+setInterval(function() {
+  while(users.length > 0) {
+    var client = users.pop();
+    client.writeHeader(204);
+    client.end();
+  }
+}, 60000);
 
 io.on('connection', function(socket) {
 	var addedUser = false;
