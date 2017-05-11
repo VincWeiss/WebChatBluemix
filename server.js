@@ -96,13 +96,13 @@ app.post('/msg', function(req, res) {
 });
 
 //This interval will clean up all the clients every minute to avoid timeouts
-setInterval(function() {
-  while(users.length > 0) {
-    var client = users.pop();
-    client.writeHeader(204);
-    client.end();
-  }
-}, 60000);
+//setInterval(function() {
+//  while(users.length > 0) {
+//    var client = users.pop();
+//    client.writeHeader(204);
+//    client.end();
+//  }
+//}, 60000);
 
 io.on('connection', function(socket) {
 	var addedUser = false;
