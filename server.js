@@ -23,7 +23,7 @@ var appEnv = cfenv.getAppEnv();
 var dbCreds = appEnv.getServiceCreds('ChilloutsData');
 var nano;
 var prints;
-var client = redis.createClient(16144, 'pub-redis-16144.dal-05.1.sl.garantiadata.com');
+var client = redis.createClient(16144, 'https://chilloutsdb.mybluemix.net');
 
 io.adapter(redis({
 	host : 'pub-redis-16144.dal-05.1.sl.garantiadata.com',
