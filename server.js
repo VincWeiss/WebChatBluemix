@@ -46,6 +46,7 @@ if (credentials.password !== '') {
 }
 
 subscriber.on('message', function(channel, msg) {
+	console.log('our channel name?! == ' + channel);
 	if (channel === 'chatter') {
 		while (users.length > 0) {
 			var client = users.pop();
