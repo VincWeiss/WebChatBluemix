@@ -48,6 +48,7 @@ subscriber.on('message', function(channel, msg) {
 	if (channel === 'chatter') {
 		while (users.length > 0) {
 			var client = users.pop();
+			console.log('the subscriber client msg = ' + msg);
 			client.end(msg);
 		}
 	}
@@ -91,6 +92,7 @@ app.get('*', function(req, res) {
 
 app.post('/msg', function(req, res) {
 	var message = req.body;
+	console.log('the app.post /msg method and the res.body = ' + message);
 	publisher.publish("chatter", JSON.stringify(message));
 	res.end();
 });
