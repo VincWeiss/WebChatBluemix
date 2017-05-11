@@ -29,15 +29,38 @@ var redisService = cfEnv.getService('RedisChilloutsDB');
 var credentials = !redisService || redisService === null ?  {"host":"127.0.0.1", "port":6379} : redisService.credentials;
 console.log('the redis credentials : ' + credentials);
 
-io.adapter(redis({
-	host : 'pub-redis-16144.dal-05.1.sl.garantiadata.com',
-	port : '16144',
-	password : 'sEl6ybtp7S4FqDvW'
-}));
-
-redisService.on('connect', function() {
-    console.log('connected to the redis DB or better the function is called o_O');
+var subscriber = redis.createClient(credentials.port, credentials.hostname);
+subscriber.on("error", function(err) {
+  console.error('There was an error with the redis client ' + err);
 });
+var publisher = redis.createClient(credentials.port, credentials.hostname);
+publisher.on("error", function(err) {
+  console.error('There was an error with the redis client ' + err);
+});
+if (credentials.password !== '') {
+  subscriber.auth(credentials.password);
+  publisher.auth(credentials.password);
+}
+
+subscriber.on('message', function(channel, msg) {
+	  if(channel === 'chatter') {
+	    while(users.length > 0) {
+	      var client = users.pop();
+	      client.end(msg);
+	    }
+	  }
+	});
+	subscriber.subscribe('chatter');
+
+//io.adapter(redis({
+//	host : 'pub-redis-16144.dal-05.1.sl.garantiadata.com',
+//	port : '16144',
+//	password : 'sEl6ybtp7S4FqDvW'
+//}));
+
+//redisService.on('connect', function() {
+//    console.log('connected to the redis DB or better the function is called o_O');
+//});
 
 var db = nano.db.use("usercredentials");
 if (dbCreds) {
