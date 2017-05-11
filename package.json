@@ -9,7 +9,7 @@
 	   "jade": "^1.10.0",
 	   "nano": "^6.1.5",
 	   "redis": "*",
-	   "express": "3.x",
+	   "express": "3.4.8",
 	   "socket.io": "*"
   }
 }
