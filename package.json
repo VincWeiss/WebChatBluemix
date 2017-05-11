@@ -5,6 +5,7 @@
 	    "start": "node server.js"
 	  },
   "dependencies": {
+	   "cfenv": "^1.0.0",
 	   "cf-env": "*",
 	   "jade": "^1.10.0",
 	   "nano": "^6.1.5",
