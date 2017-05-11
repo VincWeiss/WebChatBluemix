@@ -24,7 +24,9 @@ var appEnv = cfenv.getAppEnv();
 var dbCreds = appEnv.getServiceCreds('ChilloutsData');
 var nano;
 var prints;
-var client = redis.createClient(16144, 'https://chilloutsdb.mybluemix.net');
+var redisService = cfenv.getService('RedisChilloutsDB');
+var credentials = !redisService || redisService === null ?  {"host":"127.0.0.1", "port":6379} : redisService.credentials;
+console.log('the redis credentials : ' + credentials);
 
 io.adapter(redis({
 	host : 'pub-redis-16144.dal-05.1.sl.garantiadata.com',
@@ -32,7 +34,7 @@ io.adapter(redis({
 	password : 'sEl6ybtp7S4FqDvW'
 }));
 
-client.on('connect', function() {
+redisService.on('connect', function() {
     console.log('connected to the redis DB or better the function is called o_O');
 });
 
